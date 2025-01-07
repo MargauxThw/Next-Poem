@@ -1,29 +1,44 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import { cn } from "@/lib/utils"
-import { Palette } from "lucide-react"
+import { cn } from "@/lib/utils";
+import { Engagement } from "next/font/google";
+
+const engagement = Engagement({
+    weight: '400',
+    subsets: ['latin'],
+    display: 'swap',
+  })
 
 export function MainNav() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
-    <div className="mr-4 hidden md:flex">
-      <Link href="/" className="mr-4 flex items-center gap-2 lg:mr-6">
-        <Palette />
-        <span className="hidden font-bold lg:inline-block">
-          {"edit theme"}
+    <div className="hidden md:flex">
+      <Link href="/" className="mr-4 flex items-center gap-0 md:mr-12">
+        {/* <div>
+          <img
+            src="/quill.svg"
+            alt="Quill in ink pot"
+            // width={100} // Optional: Set the width
+            // height={100} // Optional: Set the height
+            className="h-6 w-8"
+          />
+        </div> */}
+
+        <span className={`${engagement.className} " hidden text-3xl md:inline-block mr-"`}>
+          {"Next Poems"}
         </span>
       </Link>
-      <nav className="flex items-center gap-4 text-sm xl:gap-6">
+      <nav className="flex items-center gap-4 text-sm md:gap-10">
         <Link
           href="/random"
           className={cn(
             "transition-colors hover:text-foreground/80",
             pathname?.startsWith("/random")
-              ? "text-foreground"
+              ? "font-bold border-b-2 border-b-primary"
               : "text-foreground/80"
           )}
         >
@@ -34,7 +49,7 @@ export function MainNav() {
           className={cn(
             "transition-colors hover:text-foreground/80",
             pathname?.startsWith("/browse")
-              ? "text-foreground"
+              ? "font-bold border-b-2 border-b-primary"
               : "text-foreground/80"
           )}
         >
@@ -45,7 +60,7 @@ export function MainNav() {
           className={cn(
             "transition-colors hover:text-foreground/80",
             pathname?.startsWith("/my-poems")
-              ? "text-foreground"
+              ? "font-bold border-b-2 border-b-primary"
               : "text-foreground/80"
           )}
         >
@@ -53,5 +68,5 @@ export function MainNav() {
         </Link>
       </nav>
     </div>
-  )
+  );
 }
