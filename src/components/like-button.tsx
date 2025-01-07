@@ -12,7 +12,7 @@ export default function LikeButton() {
   };
 
   return (
-    <Button variant="outline" onClick={handleHeartClick} className="px-2">
+    <Button variant="outline" onClick={handleHeartClick} size="icon">
       <Heart fill={heart ? "red" : "white"} stroke={heart ? "red" : "black"} />
     </Button>
   );
