@@ -20,11 +20,13 @@ export default function Page() {
   };
 
   useEffect(() => {
-    updatePoem();
+    if (poem.title === "Loading...") {
+        updatePoem();
+    }
   }, []);
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-start justify-items-center min-h-screen p-8 pb-8 gap-4 sm:p-20">
+    <div className="grid grid-rows-[20px_1fr_20px] items-start justify-items-center min-h-screen p-4 pb-8 gap-4 sm:p-20">
       <main className="flex flex-col gap-8 row-start-2 items-start sm:items-start w-full max-w-lg">
         <PoemLayout child={poem} />
         <Separator />
