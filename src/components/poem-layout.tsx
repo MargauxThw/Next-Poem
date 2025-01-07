@@ -3,6 +3,8 @@
 import { Poem } from "@/lib/types";
 import { Separator } from "@/components/ui/separator";
 import React, { useEffect, useState } from "react";
+import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
 export default function PoemLayout({ child }: { child: Poem }) {
   const [poem, setPoem] = useState<Poem>(child);
@@ -23,15 +25,16 @@ export default function PoemLayout({ child }: { child: Poem }) {
       </div>
 
       <Separator />
-
-      <p>
+      <section>
         {poem.lines.map((str, index) => (
-          <React.Fragment key={index}>
-            {str}
-            <br />
-          </React.Fragment>
+          <Markdown
+            rehypePlugins={[rehypeRaw]}
+            key={index}
+          >
+            {`${str.trimStart()}<br/>`}
+          </Markdown>
         ))}
-      </p>
+      </section>
     </>
   );
 }
