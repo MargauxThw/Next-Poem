@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchNewRandomPoem, fetchNewRandomFilteredPoems } from "@/lib/actions";
+import { fetchNewRandomFilteredPoems } from "@/lib/actions";
 import PoemLayout from "@/components/poem-layout";
 import RandomActionBar from "@/components/random-action-bar";
 import { ErrorMessage, Poem } from "@/lib/types";
@@ -10,17 +10,18 @@ import { samplePoem } from "@/lib/dummy-data";
 
 export default function Page() {
 	const [poem, setPoem] = useState<Poem | null>(null);
-	const [isNew, setIsNew] = useState<Boolean>(false);
-	const [isLoading, setIsLoading] = useState<Boolean>(true);
-	const [hasError, setHasError] = useState<Boolean>(false);
+	const [isNew, setIsNew] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [hasError, setHasError] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState<any>("");
 
 	const updatePoem = async () => {
 		setIsLoading(true);
-		console.log("1");
 
-		const newPoem = await fetchNewRandomFilteredPoems({linecount: 3});
-		console.log("2", newPoem);
+		const newPoem = await fetchNewRandomFilteredPoems(
+			{ linecount: 2 },
+			poem ? poem.title : ""
+		);
 
 		if ("message" in newPoem) {
 			setHasError(true);
@@ -60,6 +61,7 @@ export default function Page() {
 					<RandomActionBar
 						newRandomPoem={updatePoem}
 						isValidPoem={!hasError}
+						isAnimating={isLoading}
 					/>
 				</main>
 			) : (

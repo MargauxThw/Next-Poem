@@ -1,18 +1,19 @@
 "use server";
 import { Poem, PoemFilter, ErrorMessage } from "./types";
 
-export const fetchNewRandomPoem = async (): Promise<Poem | ErrorMessage> => {
-	try {
-		const response = await fetch("https://poetrydb.org/random");
-		const poems: Poem[] = await response.json();
-		return poems[0];
-	} catch (error) {
-		return { message: "An error has occured, try again later" };
-	}
-};
+// export const fetchNewRandomPoem = async (): Promise<Poem | ErrorMessage> => {
+// 	try {
+// 		const response = await fetch("https://poetrydb.org/random");
+// 		const poems: Poem[] = await response.json();
+// 		return poems[0];
+// 	} catch (error) {
+// 		return { message: "An error has occured, try again later" };
+// 	}
+// };
 
 export const fetchNewRandomFilteredPoems = async (
-	poemFilter: PoemFilter
+	poemFilter: PoemFilter,
+	currentPoemTitle: string
 ): Promise<Poem | ErrorMessage> => {
 	const baseUrl = "https://poetrydb.org";
 
@@ -61,8 +62,24 @@ export const fetchNewRandomFilteredPoems = async (
 		const poems = await response.json();
 
 		if (poems && poems.length > 0) {
-			// Select a random poem from the results
-			const randomIndex = Math.floor(Math.random() * poems.length);
+			// Select a random poem from the results (excluding the current poem)
+			let randomIndex = Math.floor(Math.random() * poems.length);
+			const currentPoemIndex = poems.indexOf(
+				poems.find((p: Poem) => p.title === currentPoemTitle)
+			);
+			console.log(`Random: ${randomIndex}, Current: ${currentPoemIndex}`);
+			if (randomIndex == currentPoemIndex) {
+				if (poems.length == 1) {
+					return {
+						message:
+							"No poems could be found. Try adjusting the filters.",
+					};
+				} else if (randomIndex == 0) {
+					randomIndex += 1;
+				} else {
+					randomIndex -= 1;
+				}
+			}
 			const randomPoem = poems[randomIndex];
 
 			return randomPoem;
@@ -73,13 +90,6 @@ export const fetchNewRandomFilteredPoems = async (
 		}
 	} catch (error) {
 		console.log(error);
-		// throw new Error("An error has occured, try again later");
 		return { message: "An error has occured, try again later" };
 	}
-
-	// const data = await fetch(fetchUrl);
-	// const newPoemArray: Poem[] = await data.json();
-	// console.log(newPoemArray);
-
-	// return newPoemArray[0];
 };
