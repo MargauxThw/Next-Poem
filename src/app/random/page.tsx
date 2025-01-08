@@ -3,7 +3,7 @@
 import { fetchNewRandomPoem, fetchNewRandomFilteredPoems } from "@/lib/actions";
 import PoemLayout from "@/components/poem-layout";
 import RandomActionBar from "@/components/random-action-bar";
-import { Poem } from "@/lib/types";
+import { ErrorMessage, Poem } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { samplePoem } from "@/lib/dummy-data";
@@ -12,14 +12,28 @@ export default function Page() {
 	const [poem, setPoem] = useState<Poem | null>(null);
 	const [isNew, setIsNew] = useState<Boolean>(false);
 	const [isLoading, setIsLoading] = useState<Boolean>(true);
+	const [hasError, setHasError] = useState<Boolean>(false);
+	const [errorMessage, setErrorMessage] = useState<any>("");
 
 	const updatePoem = async () => {
 		setIsLoading(true);
-		const newPoem = await fetchNewRandomFilteredPoems({});
-		setIsLoading(false);
-		setIsNew(true);
+		console.log("1");
 
-		setPoem(newPoem);
+		const newPoem = await fetchNewRandomFilteredPoems({linecount: 3});
+		console.log("2", newPoem);
+
+		if ("message" in newPoem) {
+			setHasError(true);
+			setErrorMessage(newPoem.message);
+			setIsLoading(false);
+			setIsNew(true);
+		} else {
+			setIsLoading(false);
+			setIsNew(true);
+			setPoem(newPoem);
+			setHasError(false);
+			setErrorMessage("");
+		}
 	};
 
 	useEffect(() => {
@@ -37,9 +51,16 @@ export default function Page() {
 						isNew ? "animate-blur-in" : ""
 					} ${isLoading ? "animate-blur-in-out" : ""}`}
 				>
-					<PoemLayout child={poem} />
+					{hasError ? (
+						<p>{errorMessage}</p>
+					) : (
+						<PoemLayout child={poem} />
+					)}
 					<Separator />
-					<RandomActionBar newRandomPoem={updatePoem} />
+					<RandomActionBar
+						newRandomPoem={updatePoem}
+						isValidPoem={!hasError}
+					/>
 				</main>
 			) : (
 				<></>
