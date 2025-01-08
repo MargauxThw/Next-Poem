@@ -18,6 +18,7 @@ export default function LikeButton({ isAnimating }: { isAnimating: boolean }) {
 			size="icon"
 			disabled={isAnimating}
 		>
+      <span className="sr-only">{`${heart ? "Unlike poem" : "Like poem"}`}</span>
 			<Heart
 				fill={heart ? "red" : "white"}
 				stroke={heart ? "red" : "black"}
