@@ -1,37 +1,49 @@
 "use client";
 
-import { fetchNewRandomPoem } from "@/lib/actions";
+import { fetchNewRandomPoem, fetchNewRandomFilteredPoems } from "@/lib/actions";
 import PoemLayout from "@/components/poem-layout";
 import RandomActionBar from "@/components/random-action-bar";
 import { Poem } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { samplePoem } from "@/lib/dummy-data";
 
 export default function Page() {
-  const [poem, setPoem] = useState<Poem>({
-    title: "Loading...",
-    author: "",
-    lines: [],
-  });
+	const [poem, setPoem] = useState<Poem | null>(null);
+	const [isNew, setIsNew] = useState<Boolean>(false);
+	const [isLoading, setIsLoading] = useState<Boolean>(true);
 
-  const updatePoem = async () => {
-    const newPoem = await fetchNewRandomPoem();
-    setPoem(newPoem);
-  };
+	const updatePoem = async () => {
+		setIsLoading(true);
+		const newPoem = await fetchNewRandomFilteredPoems({});
+		setIsLoading(false);
+		setIsNew(true);
 
-  useEffect(() => {
-    if (poem.title === "Loading...") {
-        updatePoem();
-    }
-  }, []);
+		setPoem(newPoem);
+	};
 
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-start justify-items-center min-h-screen p-4 pb-8 gap-4 sm:p-20">
-      <main className="flex flex-col gap-8 row-start-2 items-start sm:items-start w-full max-w-lg">
-        <PoemLayout child={poem} />
-        <Separator />
-        <RandomActionBar newRandomPoem={updatePoem} />
-      </main>
-    </div>
-  );
+	useEffect(() => {
+		if (poem == null) {
+			setPoem(samplePoem);
+			updatePoem();
+		}
+	}, []);
+
+	return (
+		<div className="grid grid-rows-[20px_1fr_20px] items-start justify-items-center min-h-screen p-4 pb-8 gap-4 sm:p-20 animate-blur-in">
+			{poem ? (
+				<main
+					className={`flex flex-col gap-8 row-start-2 items-start sm:items-start w-full max-w-lg ${
+						isNew ? "animate-blur-in" : ""
+					} ${isLoading ? "animate-blur-in-out" : ""}`}
+				>
+					<PoemLayout child={poem} />
+					<Separator />
+					<RandomActionBar newRandomPoem={updatePoem} />
+				</main>
+			) : (
+				<></>
+			)}
+		</div>
+	);
 }
