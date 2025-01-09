@@ -3,7 +3,7 @@
 import { fetchNewRandomFilteredPoems } from "@/lib/actions";
 import PoemLayout from "@/components/poem-layout";
 import RandomActionBar from "@/components/random-action-bar";
-import { ErrorMessage, Poem } from "@/lib/types";
+import { Poem, PoemFilter } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { samplePoem } from "@/lib/dummy-data";
@@ -18,8 +18,40 @@ export default function Page() {
 	const updatePoem = async () => {
 		setIsLoading(true);
 
+		const getLocalStorageFilters = () => {
+			let filters: PoemFilter = {};
+
+			const linesText = localStorage.getItem("linesText");
+			const titleText = localStorage.getItem("titleText");
+			const titleAbs = localStorage.getItem("titleAbs");
+			const authorText = localStorage.getItem("authorText");
+			const authorAbs = localStorage.getItem("authorAbs");
+
+			if (linesText && Number.parseInt(linesText)) {
+				filters.linecount = Number.parseInt(linesText);
+			}
+
+			if (titleText) {
+				filters.titleText = titleText;
+			}
+
+			if (authorText) {
+				filters.authorText = authorText;
+			}
+
+			if (titleAbs === "true") {
+				filters.titleAbs = true;
+			}
+
+			if (authorAbs === "true") {
+				filters.authorAbs = true;
+			}
+
+			return filters;
+		};
+
 		const newPoem = await fetchNewRandomFilteredPoems(
-			{ linecount: 2 },
+			getLocalStorageFilters(),
 			poem ? poem.title : ""
 		);
 

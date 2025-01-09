@@ -16,7 +16,7 @@ export default function RandomActionBar({
 }) {
 	return (
 		<div className="flex gap-2">
-      <FilterButton />
+      <FilterButton newRandomPoem={newRandomPoem} />
 			{isValidPoem && <LikeButton isAnimating={isAnimating} />}
 			<Button
 				variant="outline"

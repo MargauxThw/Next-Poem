@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 
-export function FilterButton() {
+export function FilterButton({ newRandomPoem }: { newRandomPoem: () => void }) {
 	const [titleText, setTitleText] = useState<string>("");
 	const [titleAbs, setTitleAbs] = useState<boolean>(false);
 	const [authorText, setAuthorText] = useState<string>("");
@@ -81,6 +81,7 @@ export function FilterButton() {
 		localStorage.setItem("authorText", authorText);
 		localStorage.setItem("authorAbs", authorAbs.toString());
 		localStorage.setItem("linesText", linesText);
+		newRandomPoem();
 	};
 
 	const handleOpenChange = (open: boolean) => {
