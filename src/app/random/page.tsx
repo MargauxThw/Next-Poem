@@ -77,10 +77,10 @@ export default function Page() {
 	}, []);
 
 	return (
-		<div className="grid grid-rows-[20px_1fr_20px] items-start justify-items-center min-h-screen p-4 pb-8 gap-4 sm:p-20 animate-blur-in">
+		<div className="grid grid-rows-[20px_1fr_20px] items-start justify-items-center min-h-full p-4 pb-8 gap-4 sm:p-20 animate-blur-in">
 			{poem ? (
 				<main
-					className={`flex flex-col gap-8 row-start-2 items-start sm:items-start w-full max-w-lg ${
+					className={`flex flex-col gap-8 row-start-2 items-start sm:items-start w-full max-w-lg h-fit ${
 						isNew ? "animate-blur-in" : ""
 					} ${isLoading ? "animate-blur-in-out" : ""}`}
 				>
