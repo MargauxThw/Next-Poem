@@ -1,5 +1,7 @@
-import { SlidersHorizontal } from "lucide-react";
+"use client";
 
+import { SlidersHorizontal } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -17,12 +19,26 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 
 export function FilterButton() {
-	// const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-	// 	// Sanitize the input value to keep only digits
-	//     console.log(event.target.value, "CHANGE");
-	// 	const sanitisedValue = event.target.value.replace(/[^0-9]/g, "");
-	//     event.target.value = sanitisedValue;
-	// };
+	const [titleText, setTitleText] = useState<string>("");
+	const [titleAbs, setTitleAbs] = useState<boolean>(false);
+	const [authorText, setAuthorText] = useState<string>("");
+	const [authorAbs, setAuthorAbs] = useState<boolean>(false);
+	const [linesText, setLinesText] = useState<string>("");
+	const [closedBySave, setClosedBySave] = useState<boolean>(false);
+
+	const initialiseFilters = () => {
+		setTitleText(localStorage.getItem("titleText") ?? "");
+		setTitleAbs(localStorage.getItem("titleAbs") === "true");
+
+		setAuthorText(localStorage.getItem("authorText") ?? "");
+		setAuthorAbs(localStorage.getItem("authorAbs") === "true");
+
+		setLinesText(localStorage.getItem("linesText") ?? "");
+	};
+
+	useEffect(() => {
+		initialiseFilters();
+	}, []);
 
 	const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
 		const pastedData = event.clipboardData.getData("text");
@@ -32,19 +48,65 @@ export function FilterButton() {
 		}
 	};
 
+	const resetAll = () => {
+		resetTitle();
+		resetAuthor();
+		resetLines();
+	};
+
+	// Commented calls based on assumption that clicking reset should not also save
+	const resetTitle = () => {
+		setTitleText("");
+		// localStorage.setItem("titleText", "");
+		setTitleAbs(false);
+		// localStorage.setItem("titleAbs", "false");
+	};
+
+	const resetAuthor = () => {
+		setAuthorText("");
+		// localStorage.setItem("authorText", "");
+		setAuthorAbs(false);
+		// localStorage.setItem("authorAbs", "false");
+	};
+
+	const resetLines = () => {
+		setLinesText("");
+		// localStorage.setItem("linesText", "");
+	};
+
+	const saveFilters = () => {
+		setClosedBySave(true);
+		localStorage.setItem("titleText", titleText);
+		localStorage.setItem("titleAbs", titleAbs.toString());
+		localStorage.setItem("authorText", authorText);
+		localStorage.setItem("authorAbs", authorAbs.toString());
+		localStorage.setItem("linesText", linesText);
+	};
+
+	const handleOpenChange = (open: boolean) => {
+		if (!open) {
+			setClosedBySave(false);
+		} else if (!closedBySave) {
+			initialiseFilters();
+		}
+	};
+
 	return (
-		<Dialog>
+		<Dialog onOpenChange={(open) => handleOpenChange(open)}>
 			<DialogTrigger asChild>
 				<Button variant="outline" size="icon">
 					<SlidersHorizontal />
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-md">
+			<DialogContent
+				className="sm:max-w-md"
+				onOpenAutoFocus={(e) => e.preventDefault()}
+			>
 				<DialogHeader>
 					<DialogTitle>Edit filters</DialogTitle>
 					<DialogDescription>
-						Use filters to control the poems generated. Click save
-						to apply the filters.
+						Filters control the poems generated across the site.
+						Click save to apply the filters.
 					</DialogDescription>
 				</DialogHeader>
 				<Separator />
@@ -54,14 +116,25 @@ export function FilterButton() {
 						<div className="flex flex-row items-center gap-2">
 							<Input
 								id="title"
-								defaultValue=""
 								placeholder="Any"
+								value={titleText}
+								onChange={(e) => {
+									setTitleText(e.target.value);
+								}}
 							/>
-							<Button variant="secondary">Reset</Button>
+							<Button variant="secondary" onClick={resetTitle}>
+								Reset
+							</Button>
 						</div>
 					</div>
 					<div className="flex flex-row items-center gap-2">
-						<Checkbox id="title-abs" />
+						<Checkbox
+							id="title-abs"
+							checked={titleAbs}
+							onCheckedChange={(e) => {
+								setTitleAbs(e as boolean);
+							}}
+						/>
 						<Label
 							htmlFor="title-abs"
 							className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -77,14 +150,25 @@ export function FilterButton() {
 						<div className="flex flex-row items-center gap-2">
 							<Input
 								id="author"
-								defaultValue=""
 								placeholder="Any"
+								value={authorText}
+								onChange={(e) => {
+									setAuthorText(e.target.value);
+								}}
 							/>
-							<Button variant="secondary">Reset</Button>
+							<Button variant="secondary" onClick={resetAuthor}>
+								Reset
+							</Button>
 						</div>
 					</div>
 					<div className="flex flex-row items-center gap-2">
-						<Checkbox id="author-abs" />
+						<Checkbox
+							id="author-abs"
+							checked={authorAbs}
+							onCheckedChange={(e) => {
+								setAuthorAbs(e as boolean);
+							}}
+						/>
 						<Label
 							htmlFor="author-abs"
 							className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -101,25 +185,35 @@ export function FilterButton() {
 							<Input
 								type="number"
 								id="lines"
-								defaultValue=""
 								placeholder="Any"
-								// onChange={handleChange}
 								onPaste={handlePaste}
+								value={linesText}
+								onChange={(e) => {
+									setLinesText(e.target.value);
+								}}
 							/>
-							<Button variant="secondary">Reset</Button>
+							<Button variant="secondary" onClick={resetLines}>
+								Reset
+							</Button>
 						</div>
 					</div>
 				</div>
 				<Separator />
 
 				<DialogFooter className="sm:justify-end gap-y-2">
+					{/* <DialogClose asChild> */}
+					<Button
+						type="button"
+						variant="secondary"
+						onClick={resetAll}
+					>
+						Reset all
+					</Button>
+					{/* </DialogClose> */}
 					<DialogClose asChild>
-						<Button type="button" variant="secondary">
-							Reset all
+						<Button type="button" onClick={saveFilters}>
+							Save
 						</Button>
-					</DialogClose>
-					<DialogClose asChild>
-						<Button type="button">Save</Button>
 					</DialogClose>
 				</DialogFooter>
 			</DialogContent>
