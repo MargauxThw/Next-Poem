@@ -11,45 +11,35 @@ import {
 	PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { FilterButton } from "@/components/filter-button";
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
 
 export default function Page() {
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [totalPages, setTotalPages] = useState<number>(5);
+	const [totalPages, setTotalPages] = useState<number>(4);
 	const [pagesToDisplay, setPagesToDisplay] = useState<Array<number>>([]);
 
 	useEffect(() => {
-		let toDisplay = [];
+		let toDisplay = [
+			...Array(totalPages)
+				.keys()
+				.map((k) => k + 1),
+		];
 
-		if (totalPages < 4) {
-			setPagesToDisplay([
-				...Array(totalPages)
-					.keys()
-					.map((k) => k + 1),
-			]);
+		if (totalPages < 6) {
+			setPagesToDisplay(toDisplay);
 		} else {
-			toDisplay.push(1);
+			if (currentPage <= 3) {
+                toDisplay.splice(3, totalPages - 4, -1)
+            } else if (totalPages - currentPage <= 2) {
+                toDisplay.splice(1, totalPages - 4, -1)
+            } else {
+                toDisplay.splice(1, currentPage - 2, -1)
+                toDisplay.splice(3, totalPages - currentPage - 1, -1)
+            }
 
-			if (currentPage !== 1 && currentPage !== totalPages) {
-				toDisplay.push(currentPage);
-				if (currentPage !== 2) {
-					toDisplay.splice(1, 0, -1);
-					if (totalPages - currentPage > 1) {
-						toDisplay.splice(3, 0, -1);
-					}
-				} else if (totalPages - currentPage > 1) {
-					toDisplay.splice(2, 0, -1);
-				}
-			} else {
-				toDisplay.splice(1, 0, -1);
-			}
-
-			toDisplay.push(totalPages);
-
-			setPagesToDisplay([...toDisplay]);
+			setPagesToDisplay(toDisplay);
 		}
 	}, [totalPages, currentPage]);
 
@@ -101,13 +91,20 @@ export default function Page() {
 									{pageNumber === -1 ? (
 										<PaginationEllipsis />
 									) : pageNumber !== currentPage ? (
-										<PaginationLink href="#" onClick={(e) => setCurrentPage(pageNumber)}>
+										<PaginationLink
+											href="#"
+											onClick={(e) =>
+												setCurrentPage(pageNumber)
+											}
+										>
 											{pageNumber}
 										</PaginationLink>
 									) : (
 										<PaginationLink
 											href="#"
-											className={"pointer-events-none border-solid border-black border"}
+											className={
+												"pointer-events-none border-solid border-black border"
+											}
 											aria-disabled="true"
 											tabIndex={-1}
 											isActive
