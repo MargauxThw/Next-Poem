@@ -14,13 +14,79 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FilterButton } from "@/components/filter-button";
 import { useEffect, useState } from "react";
+import { Poem, PoemFilter } from "@/lib/types";
+import { fetchNewRandomFilteredPoems } from "@/lib/actions";
 
 export default function Page() {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [totalPages, setTotalPages] = useState<number>(4);
-	const [pagesToDisplay, setPagesToDisplay] = useState<Array<number>>([]);
+	const [poems, setPoems] = useState<Array<Poem>>([]);
+	const [isNew, setIsNew] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [hasError, setHasError] = useState<boolean>(false);
+	const [errorMessage, setErrorMessage] = useState<any>("");
+
+	const updatePoemList = async () => {
+		const getLocalStorageFilters = () => {
+			let filters: PoemFilter = {};
+
+			const linesText = localStorage.getItem("linesText_browse");
+			const titleText = localStorage.getItem("titleText_browse");
+			const titleAbs = localStorage.getItem("titleAbs_browse");
+			const authorText = localStorage.getItem("authorText_browse");
+			const authorAbs = localStorage.getItem("authorAbs_browse");
+
+			if (linesText && Number.parseInt(linesText)) {
+				filters.linecount = Number.parseInt(linesText);
+			}
+
+			if (titleText) {
+				filters.titleText = titleText;
+			}
+
+			if (authorText) {
+				filters.authorText = authorText;
+			}
+
+			if (titleAbs === "true") {
+				filters.titleAbs = true;
+			}
+
+			if (authorAbs === "true") {
+				filters.authorAbs = true;
+			}
+
+			return filters;
+		};
+
+		const newPoemList = await fetchNewRandomFilteredPoems(
+			getLocalStorageFilters(),
+			true
+		);
+
+		console.log(newPoemList);
+
+		if ("message" in newPoemList) {
+			setHasError(true);
+			setErrorMessage(newPoemList.message);
+			setIsLoading(false);
+			setIsNew(true);
+		} else {
+			setIsLoading(false);
+			setIsNew(true);
+			setPoems(newPoemList);
+			setCurrentPage(1);
+			setTotalPages(Math.ceil(newPoemList.length / 10));
+			setHasError(false);
+			setErrorMessage("");
+		}
+	};
 
 	useEffect(() => {
+		updatePoemList();
+	}, []);
+
+	const getPagesToDisplay = () => {
 		let toDisplay = [
 			...Array(totalPages)
 				.keys()
@@ -28,20 +94,20 @@ export default function Page() {
 		];
 
 		if (totalPages < 6) {
-			setPagesToDisplay(toDisplay);
+			return toDisplay;
 		} else {
 			if (currentPage <= 3) {
-                toDisplay.splice(3, totalPages - 4, -1)
-            } else if (totalPages - currentPage <= 2) {
-                toDisplay.splice(1, totalPages - 4, -1)
-            } else {
-                toDisplay.splice(1, currentPage - 2, -1)
-                toDisplay.splice(3, totalPages - currentPage - 1, -1)
-            }
+				toDisplay.splice(3, totalPages - 4, -1);
+			} else if (totalPages - currentPage <= 2) {
+				toDisplay.splice(1, totalPages - 4, -1);
+			} else {
+				toDisplay.splice(1, currentPage - 2, -1);
+				toDisplay.splice(3, totalPages - currentPage - 1, -1);
+			}
 
-			setPagesToDisplay(toDisplay);
+			return toDisplay;
 		}
-	}, [totalPages, currentPage]);
+	};
 
 	return (
 		<div className="grid grid-rows-[20px_1fr_20px] items-start justify-items-center min-h-full p-4 pb-8 gap-4 sm:p-20 animate-blur-in">
@@ -62,81 +128,103 @@ export default function Page() {
 					</div>
 				</div>
 				<Separator />
+				{poems ? (
+					poems
+						.slice(
+							currentPage === 1 ? 0 : (currentPage * 10) - 10,
+							currentPage * 10 >= poems.length
+								? poems.length
+								: currentPage * 10
+						)
+						.map((poem, index) => {
+							return <p key={index}>{poem.title}</p>;
+						})
+				) : (
+					<></>
+				)}
 				{totalPages !== 1 ? (
-					<Pagination>
-						<PaginationContent>
-							{currentPage !== 1 ? (
-								<PaginationItem>
-									<PaginationPrevious
-										href="#"
-										onClick={(e) =>
-											setCurrentPage(currentPage - 1)
-										}
-									/>
-								</PaginationItem>
-							) : (
-								<PaginationItem>
-									<PaginationPrevious
-										href="#"
-										className={"pointer-events-none"}
-										aria-disabled="true"
-										tabIndex={-1}
-										isDisabled
-									/>
-								</PaginationItem>
-							)}
+					<>
+						<Separator />
 
-							{pagesToDisplay.map((pageNumber, index) => (
-								<PaginationItem key={index}>
-									{pageNumber === -1 ? (
-										<PaginationEllipsis />
-									) : pageNumber !== currentPage ? (
-										<PaginationLink
+						<Pagination>
+							<PaginationContent>
+								{currentPage !== 1 ? (
+									<PaginationItem>
+										<PaginationPrevious
 											href="#"
 											onClick={(e) =>
-												setCurrentPage(pageNumber)
+												setCurrentPage(currentPage - 1)
 											}
-										>
-											{pageNumber}
-										</PaginationLink>
-									) : (
-										<PaginationLink
+										/>
+									</PaginationItem>
+								) : (
+									<PaginationItem>
+										<PaginationPrevious
 											href="#"
-											className={
-												"pointer-events-none border-solid border-black border"
-											}
+											className={"pointer-events-none"}
 											aria-disabled="true"
 											tabIndex={-1}
-											isActive
-										>
-											{pageNumber}
-										</PaginationLink>
-									)}
-								</PaginationItem>
-							))}
+											isDisabled
+										/>
+									</PaginationItem>
+								)}
 
-							{currentPage !== totalPages ? (
-								<PaginationItem>
-									<PaginationNext
-										href="#"
-										onClick={(e) =>
-											setCurrentPage(currentPage + 1)
-										}
-									/>
-								</PaginationItem>
-							) : (
-								<PaginationItem>
-									<PaginationNext
-										href="#"
-										className={"pointer-events-none"}
-										aria-disabled="true"
-										tabIndex={-1}
-										isDisabled
-									/>
-								</PaginationItem>
-							)}
-						</PaginationContent>
-					</Pagination>
+								{getPagesToDisplay().map(
+									(pageNumber, index) => (
+										<PaginationItem key={index}>
+											{pageNumber === -1 ? (
+												<PaginationEllipsis />
+											) : pageNumber !== currentPage ? (
+												<PaginationLink
+													href="#"
+													onClick={(e) =>
+														setCurrentPage(
+															pageNumber
+														)
+													}
+												>
+													{pageNumber}
+												</PaginationLink>
+											) : (
+												<PaginationLink
+													href="#"
+													className={
+														"pointer-events-none border-solid border-black border"
+													}
+													aria-disabled="true"
+													tabIndex={-1}
+													isActive
+												>
+													{pageNumber}
+												</PaginationLink>
+											)}
+										</PaginationItem>
+									)
+								)}
+
+								{currentPage !== totalPages ? (
+									<PaginationItem>
+										<PaginationNext
+											href="#"
+											onClick={(e) =>
+												setCurrentPage(currentPage + 1)
+											}
+										/>
+									</PaginationItem>
+								) : (
+									<PaginationItem>
+										<PaginationNext
+											href="#"
+											className={"pointer-events-none"}
+											aria-disabled="true"
+											tabIndex={-1}
+											isDisabled
+										/>
+									</PaginationItem>
+								)}
+							</PaginationContent>
+						</Pagination>
+					</>
 				) : (
 					<></>
 				)}
