@@ -1,20 +1,10 @@
 "use server";
 import { Poem, PoemFilter, ErrorMessage } from "./types";
 
-// export const fetchNewRandomPoem = async (): Promise<Poem | ErrorMessage> => {
-// 	try {
-// 		const response = await fetch("https://poetrydb.org/random");
-// 		const poems: Poem[] = await response.json();
-// 		return poems[0];
-// 	} catch (error) {
-// 		return { message: "An error has occured, try again later" };
-// 	}
-// };
-
 export const fetchNewRandomFilteredPoems = async (
 	poemFilter: PoemFilter,
-	currentPoemTitle: string
-): Promise<Poem | ErrorMessage> => {
+    forSearch?: boolean
+): Promise<Array<Poem> | ErrorMessage> => {
 	const baseUrl = "https://poetrydb.org";
 
 	let inputFields = "";
@@ -53,43 +43,21 @@ export const fetchNewRandomFilteredPoems = async (
 		inputFields = inputFields.slice(0, -1);
 		responseTail = `/${inputFields}/${searchTerms}`;
 	} else {
-		responseTail = "/random";
+		responseTail = forSearch ? "/random/30" : "/random";
 	}
 
 	try {
-		console.log(baseUrl + responseTail);
 		const response = await fetch(baseUrl + responseTail);
 		const poems = await response.json();
 
 		if (poems && poems.length > 0) {
-			// Select a random poem from the results (excluding the current poem)
-			let randomIndex = Math.floor(Math.random() * poems.length);
-			const currentPoemIndex = poems.indexOf(
-				poems.find((p: Poem) => p.title === currentPoemTitle)
-			);
-			console.log(`Random: ${randomIndex}, Current: ${currentPoemIndex}`);
-			if (randomIndex == currentPoemIndex) {
-				if (poems.length == 1) {
-					return {
-						message:
-							"No poems could be found. Try adjusting the filters.",
-					};
-				} else if (randomIndex == 0) {
-					randomIndex += 1;
-				} else {
-					randomIndex -= 1;
-				}
-			}
-			const randomPoem = poems[randomIndex];
-
-			return randomPoem;
+			return poems;
 		} else {
 			return {
 				message: "No poems could be found. Try adjusting the filters.",
 			};
 		}
 	} catch (error) {
-		console.log(error);
 		return { message: "An error has occured, try again later" };
 	}
 };

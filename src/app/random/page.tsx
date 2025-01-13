@@ -50,22 +50,56 @@ export default function Page() {
 			return filters;
 		};
 
-		const newPoem = await fetchNewRandomFilteredPoems(
-			getLocalStorageFilters(),
-			poem ? poem.title : ""
+		const getRandomPoem = (poems: Array<Poem>) => {
+			// Select a random poem from the results (excluding the current poem)
+			let randomIndex = Math.floor(Math.random() * poems.length);
+			let currPoem = poems.find(
+				(p): p is Poem => p.title === poem?.title
+			);
+			const currentPoemIndex = currPoem ? poems.indexOf(currPoem) : -1;
+
+			if (randomIndex == currentPoemIndex) {
+				if (poems.length == 1) {
+					return {
+						message:
+							"No poems could be found. Try adjusting the filters.",
+					};
+				} else if (randomIndex == 0) {
+					randomIndex += 1;
+				} else {
+					randomIndex -= 1;
+				}
+			}
+
+			const randomPoem = poems[randomIndex];
+
+			return randomPoem;
+		};
+
+		const poemList = await fetchNewRandomFilteredPoems(
+			getLocalStorageFilters()
 		);
 
-		if ("message" in newPoem) {
+		if ("message" in poemList) {
 			setHasError(true);
-			setErrorMessage(newPoem.message);
+			setErrorMessage(poemList.message);
 			setIsLoading(false);
 			setIsNew(true);
 		} else {
-			setIsLoading(false);
-			setIsNew(true);
-			setPoem(newPoem);
-			setHasError(false);
-			setErrorMessage("");
+			const newPoem = getRandomPoem(poemList);
+
+			if ("message" in newPoem) {
+				setHasError(true);
+				setErrorMessage(newPoem.message);
+				setIsLoading(false);
+				setIsNew(true);
+			} else {
+				setIsLoading(false);
+				setIsNew(true);
+				setPoem(newPoem);
+				setHasError(false);
+				setErrorMessage("");
+			}
 		}
 	};
 
