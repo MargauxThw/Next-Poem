@@ -10,17 +10,27 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FilterButton } from "@/components/filter-button";
-import { useEffect, useState } from "react";
-import { Poem, PoemFilter } from "@/lib/types";
+import { useEffect, useMemo, useState } from "react";
+import { Poem, PoemFilter, sortingOption } from "@/lib/types";
 import { fetchNewRandomFilteredPoems } from "@/lib/actions";
 
 export default function Page() {
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [totalPages, setTotalPages] = useState<number>(4);
 	const [poems, setPoems] = useState<Array<Poem>>([]);
+	const [sortMode, setSortMode] = useState<sortingOption>(
+		sortingOption.titleAZ
+	);
 	const [isNew, setIsNew] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [hasError, setHasError] = useState<boolean>(false);
@@ -76,7 +86,6 @@ export default function Page() {
 			setIsNew(true);
 			setPoems(newPoemList);
 			setCurrentPage(1);
-			setTotalPages(Math.ceil(newPoemList.length / 10));
 			setHasError(false);
 			setErrorMessage("");
 		}
@@ -86,7 +95,11 @@ export default function Page() {
 		updatePoemList();
 	}, []);
 
-	const getPagesToDisplay = () => {
+	const totalPages = useMemo(() => {
+		return Math.ceil(poems.length / 10);
+	}, [poems]);
+
+	const pagesToDisplay = useMemo(() => {
 		let toDisplay = [
 			...Array(totalPages)
 				.keys()
@@ -107,7 +120,7 @@ export default function Page() {
 
 			return toDisplay;
 		}
-	};
+	}, [totalPages]);
 
 	return (
 		<div className="grid grid-rows-[20px_1fr_20px] items-start justify-items-center min-h-full p-4 pb-8 gap-4 sm:p-20 animate-blur-in">
@@ -125,13 +138,23 @@ export default function Page() {
 						<Button>Search</Button>
 
 						<FilterButton newRandomPoem={() => {}} />
+						<Select>
+							<SelectTrigger className="w-[160px]">
+								<SelectValue defaultValue={} />
+							</SelectTrigger>
+							<SelectContent>
+								{ Object.values(sortingOption).map((option, index) => (
+									<SelectItem key={index} value={option}>{option}</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 					</div>
 				</div>
 				<Separator />
 				{poems ? (
 					poems
 						.slice(
-							currentPage === 1 ? 0 : (currentPage * 10) - 10,
+							currentPage === 1 ? 0 : currentPage * 10 - 10,
 							currentPage * 10 >= poems.length
 								? poems.length
 								: currentPage * 10
@@ -169,38 +192,34 @@ export default function Page() {
 									</PaginationItem>
 								)}
 
-								{getPagesToDisplay().map(
-									(pageNumber, index) => (
-										<PaginationItem key={index}>
-											{pageNumber === -1 ? (
-												<PaginationEllipsis />
-											) : pageNumber !== currentPage ? (
-												<PaginationLink
-													href="#"
-													onClick={(e) =>
-														setCurrentPage(
-															pageNumber
-														)
-													}
-												>
-													{pageNumber}
-												</PaginationLink>
-											) : (
-												<PaginationLink
-													href="#"
-													className={
-														"pointer-events-none border-solid border-black border"
-													}
-													aria-disabled="true"
-													tabIndex={-1}
-													isActive
-												>
-													{pageNumber}
-												</PaginationLink>
-											)}
-										</PaginationItem>
-									)
-								)}
+								{pagesToDisplay.map((pageNumber, index) => (
+									<PaginationItem key={index}>
+										{pageNumber === -1 ? (
+											<PaginationEllipsis />
+										) : pageNumber !== currentPage ? (
+											<PaginationLink
+												href="#"
+												onClick={(e) =>
+													setCurrentPage(pageNumber)
+												}
+											>
+												{pageNumber}
+											</PaginationLink>
+										) : (
+											<PaginationLink
+												href="#"
+												className={
+													"pointer-events-none border-solid border-black border"
+												}
+												aria-disabled="true"
+												tabIndex={-1}
+												isActive
+											>
+												{pageNumber}
+											</PaginationLink>
+										)}
+									</PaginationItem>
+								))}
 
 								{currentPage !== totalPages ? (
 									<PaginationItem>
