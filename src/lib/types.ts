@@ -15,3 +15,12 @@ export interface PoemFilter {
     titleAbs?: boolean;
     authorAbs?: boolean;
 }
+
+export enum sortingOption {
+    authorAZ = "By Author (A-Z)",
+    authorZA = "By Author (Z-A)",
+    titleAZ = "By Title (A-Z)",
+    titleZA = "By Title (Z-A)",
+    linesAsc = "By Lines (Asc.)",
+    linesDesc = "By Lines (Desc.)",
+}
