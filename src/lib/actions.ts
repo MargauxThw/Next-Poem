@@ -43,7 +43,7 @@ export const fetchNewRandomFilteredPoems = async (
 		inputFields = inputFields.slice(0, -1);
 		responseTail = `/${inputFields}/${searchTerms}`;
 	} else {
-		responseTail = forSearch ? "/random/30" : "/random";
+		responseTail = forSearch ? "/random/10" : "/random";
 	}
 
 	try {
