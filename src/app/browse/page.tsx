@@ -22,6 +22,7 @@ import { FilterButton } from "@/components/browse-filter-button";
 import { useEffect, useMemo, useState } from "react";
 import { Poem, PoemFilter, sortingOption } from "@/lib/types";
 import { fetchNewRandomFilteredPoems } from "@/lib/actions";
+import PoemCard from "@/components/poem-card";
 
 export default function Page() {
 	const [currentPage, setCurrentPage] = useState<number>(1);
@@ -118,6 +119,10 @@ export default function Page() {
 		}
 	}, [totalPages, currentPage]);
 
+	const openPoem = (poem: Poem) => {
+		console.log("Opening", poem.title);
+	}
+
 	return (
 		<div className="grid grid-rows-[20px_1fr_20px] items-start justify-items-center min-h-full p-4 pb-8 gap-4 sm:p-20 animate-blur-in">
 			<main
@@ -168,7 +173,7 @@ export default function Page() {
 								: currentPage * 10
 						)
 						.map((poem, index) => {
-							return <p key={index}>{poem.title}</p>;
+							return <PoemCard key={index} poem={poem} openPoem={openPoem} />;
 						})
 				) : (
 					<></>
