@@ -20,7 +20,7 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FilterButton } from "@/components/filter-button";
+import { FilterButton } from "@/components/browse-filter-button";
 import { useEffect, useMemo, useState } from "react";
 import { Poem, PoemFilter, sortingOption } from "@/lib/types";
 import { fetchNewRandomFilteredPoems } from "@/lib/actions";
@@ -73,8 +73,6 @@ export default function Page() {
 			getLocalStorageFilters(),
 			true
 		);
-
-		console.log(newPoemList);
 
 		if ("message" in newPoemList) {
 			setHasError(true);
@@ -131,25 +129,28 @@ export default function Page() {
 					<h2 className="decoration-black font-bold text-xl">
 						Browse poems
 					</h2>
-					<div className="flex flex-row gap-2 w-full">
-						<div className="flex-grow">
+					<Separator />
+					<div className="flex flex-row gap-2 w-full flex-wrap mb-0">
+						{/* <div className="flex-grow">
 							<Input />
 						</div>
-						<Button>Search</Button>
+						<Button>Search</Button> */}
 
-						<FilterButton newRandomPoem={() => {}} />
+						<FilterButton initiateFetch={() => {}} />
 						<Select
 							value={sortMode}
-							onValueChange={
-								(value) =>
-									setSortMode(
-										Object.values(sortingOption).find(
-											(v) => v === value
-										) || sortMode
-									)
+							onValueChange={(value) =>
+								setSortMode(
+									Object.values(sortingOption).find(
+										(v) => v === value
+									) || sortMode
+								)
 							}
 						>
-							<SelectTrigger className="w-[160px]">
+							<SelectTrigger className="w-min justify-start gap-2">
+								<span className="text-muted-foreground">
+									Sort:{" "}
+								</span>
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -163,8 +164,8 @@ export default function Page() {
 							</SelectContent>
 						</Select>
 					</div>
+					<Separator />
 				</div>
-				<Separator />
 				{poems ? (
 					poems
 						.slice(

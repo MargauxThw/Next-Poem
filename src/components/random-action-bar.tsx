@@ -3,24 +3,24 @@
 import { Shuffle } from "lucide-react";
 import LikeButton from "./like-button";
 import { Button } from "./ui/button";
-import { FilterButton } from "./filter-button";
+import { FilterButton } from "./random-filter-button";
 
 export default function RandomActionBar({
-	newRandomPoem,
+	initiateFetch,
 	isValidPoem,
 	isAnimating,
 }: {
-	newRandomPoem: () => void;
+	initiateFetch: () => void;
 	isValidPoem: boolean;
 	isAnimating: boolean;
 }) {
 	return (
 		<div className="flex gap-2">
-      <FilterButton newRandomPoem={newRandomPoem} />
+      <FilterButton initiateFetch={initiateFetch} />
 			{isValidPoem && <LikeButton isAnimating={isAnimating} />}
 			<Button
 				variant="outline"
-				onClick={newRandomPoem}
+				onClick={initiateFetch}
 				disabled={isAnimating}
 			>
 				New random poem

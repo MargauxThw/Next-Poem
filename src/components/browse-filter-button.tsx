@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 
-export function FilterButton({ newRandomPoem }: { newRandomPoem: () => void }) {
+export function FilterButton({ initiateFetch }: { initiateFetch: () => void }) {
 	const [titleText, setTitleText] = useState<string>("");
 	const [titleAbs, setTitleAbs] = useState<boolean>(false);
 	const [authorText, setAuthorText] = useState<string>("");
@@ -81,7 +81,7 @@ export function FilterButton({ newRandomPoem }: { newRandomPoem: () => void }) {
 		localStorage.setItem("authorText", authorText);
 		localStorage.setItem("authorAbs", authorAbs.toString());
 		localStorage.setItem("linesText", linesText);
-		newRandomPoem();
+		initiateFetch();
 	};
 
 	const handleOpenChange = (open: boolean) => {
@@ -95,8 +95,9 @@ export function FilterButton({ newRandomPoem }: { newRandomPoem: () => void }) {
 	return (
 		<Dialog onOpenChange={(open) => handleOpenChange(open)}>
 			<DialogTrigger asChild>
-				<Button variant="outline" size="icon">
-					<SlidersHorizontal />
+				<Button variant="default" className="sm:hidden">
+					Edit filters
+					<SlidersHorizontal className="ml-auto" />
 				</Button>
 			</DialogTrigger>
 			<DialogContent

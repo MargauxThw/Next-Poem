@@ -125,7 +125,7 @@ export default function Page() {
 					)}
 					<Separator />
 					<RandomActionBar
-						newRandomPoem={updatePoem}
+						initiateFetch={updatePoem}
 						isValidPoem={!hasError}
 						isAnimating={isLoading}
 					/>
