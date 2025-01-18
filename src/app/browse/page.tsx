@@ -23,6 +23,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Poem, PoemFilter, sortingOption } from "@/lib/types";
 import { fetchNewRandomFilteredPoems } from "@/lib/actions";
 import PoemCard from "@/components/poem-card";
+import { BrowsePagination } from "@/components/browse-pagination";
+import { samplePoemList } from "@/lib/dummy-data";
 
 export default function Page() {
 	const [currentPage, setCurrentPage] = useState<number>(1);
@@ -30,7 +32,7 @@ export default function Page() {
 	const [sortMode, setSortMode] = useState<sortingOption>(
 		sortingOption.titleAZ
 	);
-	const [isNew, setIsNew] = useState<boolean>(false);
+	const [isNew, setIsNew] = useState<boolean>(true);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [hasError, setHasError] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState<any>("");
@@ -77,18 +79,20 @@ export default function Page() {
 			setHasError(true);
 			setErrorMessage(newPoemList.message);
 			setIsLoading(false);
-			setIsNew(true);
+			setIsNew(false);
 		} else {
-			setIsLoading(false);
-			setIsNew(true);
 			setPoems(newPoemList);
 			setCurrentPage(1);
+			setIsLoading(false);
+			setIsNew(false);
 			setHasError(false);
 			setErrorMessage("");
 		}
 	};
 
 	useEffect(() => {
+		setIsLoading(true);
+		setIsNew(true);
 		updatePoemList();
 	}, []);
 
@@ -96,32 +100,17 @@ export default function Page() {
 		return Math.ceil(poems.length / 10);
 	}, [poems]);
 
-	const pagesToDisplay = useMemo(() => {
-		let toDisplay = [
-			...Array(totalPages)
-				.keys()
-				.map((k) => k + 1),
-		];
-
-		if (totalPages < 6) {
-			return toDisplay;
-		} else {
-			if (currentPage <= 3) {
-				toDisplay.splice(3, totalPages - 4, -1);
-			} else if (totalPages - currentPage <= 2) {
-				toDisplay.splice(1, totalPages - 4, -1);
-			} else {
-				toDisplay.splice(1, currentPage - 2, -1);
-				toDisplay.splice(3, totalPages - currentPage - 1, -1);
-			}
-
-			return toDisplay;
-		}
-	}, [totalPages, currentPage]);
+	const changePage = (newPageNumber: number) => {
+		setCurrentPage(newPageNumber);
+		window.scrollTo({
+			top: 0,
+			behavior: "smooth",
+		});
+	};
 
 	const openPoem = (poem: Poem) => {
 		console.log("Opening", poem.title);
-	}
+	};
 
 	return (
 		<div className="grid grid-rows-[20px_1fr_20px] items-start justify-items-center min-h-full p-4 pb-8 gap-4 sm:p-20 animate-blur-in">
@@ -164,98 +153,49 @@ export default function Page() {
 					</div>
 					<Separator />
 				</div>
-				{poems ? (
-					poems
-						.slice(
-							currentPage === 1 ? 0 : currentPage * 10 - 10,
-							currentPage * 10 >= poems.length
-								? poems.length
-								: currentPage * 10
-						)
-						.map((poem, index) => {
-							return <PoemCard key={index} poem={poem} openPoem={openPoem} />;
-						})
+				{hasError ? (
+					<p>{errorMessage}</p>
+				) : poems && poems.length > 0 ? (
+					<div className={`flex flex-col gap-4 w-full -mt-2 animate-blur-in`}>
+						{poems
+							.slice(
+								currentPage === 1 ? 0 : currentPage * 10 - 10,
+								currentPage * 10 >= poems.length
+									? poems.length
+									: currentPage * 10
+							)
+							.map((poem, index) => {
+								return (
+									<PoemCard
+										key={index}
+										poem={poem}
+										openPoem={openPoem}
+									/>
+								);
+							})}
+					</div>
 				) : (
-					<></>
+					<div className={`flex flex-col gap-4 w-full -mt-2 animate-blur-in-out`}>
+						{samplePoemList
+							.map((poem, index) => {
+								return (
+									<PoemCard
+										key={index}
+										poem={poem}
+										openPoem={() => {}}
+									/>
+								);
+							})}
+					</div>
 				)}
-				{totalPages !== 1 ? (
+				{totalPages !== 1 && !isNew && !hasError ? (
 					<>
-						<Separator />
-
-						<Pagination>
-							<PaginationContent>
-								{currentPage !== 1 ? (
-									<PaginationItem>
-										<PaginationPrevious
-											href="#"
-											onClick={(e) =>
-												setCurrentPage(currentPage - 1)
-											}
-										/>
-									</PaginationItem>
-								) : (
-									<PaginationItem>
-										<PaginationPrevious
-											href="#"
-											className={"pointer-events-none"}
-											aria-disabled="true"
-											tabIndex={-1}
-											isDisabled
-										/>
-									</PaginationItem>
-								)}
-
-								{pagesToDisplay.map((pageNumber, index) => (
-									<PaginationItem key={index}>
-										{pageNumber === -1 ? (
-											<PaginationEllipsis />
-										) : pageNumber !== currentPage ? (
-											<PaginationLink
-												href="#"
-												onClick={(e) =>
-													setCurrentPage(pageNumber)
-												}
-											>
-												{pageNumber}
-											</PaginationLink>
-										) : (
-											<PaginationLink
-												href="#"
-												className={
-													"pointer-events-none border-solid border-black border"
-												}
-												aria-disabled="true"
-												tabIndex={-1}
-												isActive
-											>
-												{pageNumber}
-											</PaginationLink>
-										)}
-									</PaginationItem>
-								))}
-
-								{currentPage !== totalPages ? (
-									<PaginationItem>
-										<PaginationNext
-											href="#"
-											onClick={(e) =>
-												setCurrentPage(currentPage + 1)
-											}
-										/>
-									</PaginationItem>
-								) : (
-									<PaginationItem>
-										<PaginationNext
-											href="#"
-											className={"pointer-events-none"}
-											aria-disabled="true"
-											tabIndex={-1}
-											isDisabled
-										/>
-									</PaginationItem>
-								)}
-							</PaginationContent>
-						</Pagination>
+						<Separator className="animate-blur-in" />
+						<BrowsePagination
+							currentPage={currentPage}
+							totalPages={totalPages}
+							setCurrentPage={changePage}
+						/>
 					</>
 				) : (
 					<></>
