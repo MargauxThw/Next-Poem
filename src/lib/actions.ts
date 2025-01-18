@@ -3,7 +3,7 @@ import { Poem, PoemFilter, ErrorMessage } from "./types";
 
 export const fetchNewRandomFilteredPoems = async (
 	poemFilter: PoemFilter,
-    forSearch?: boolean
+    forSearchDefault?: boolean
 ): Promise<Array<Poem> | ErrorMessage> => {
 	const baseUrl = "https://poetrydb.org";
 
@@ -43,7 +43,7 @@ export const fetchNewRandomFilteredPoems = async (
 		inputFields = inputFields.slice(0, -1);
 		responseTail = `/${inputFields}/${searchTerms}`;
 	} else {
-		responseTail = forSearch ? "/random/10" : "/random";
+		responseTail = forSearchDefault ? "/random/10" : "/random";
 	}
 
 	try {
@@ -51,6 +51,7 @@ export const fetchNewRandomFilteredPoems = async (
 		const poems = await response.json();
 
 		if (poems && poems.length > 0) {
+			console.log(poems, baseUrl + responseTail)
 			return poems;
 		} else {
 			return {
