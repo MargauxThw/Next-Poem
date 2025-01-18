@@ -60,6 +60,7 @@ export default {
 				'blur-in-out': 'blurOut 0.5s ease-in-out forwards, pulse 1s ease-in-out infinite 0.5s',
 				'blur-in': 'blurIn 1s ease-in-out forwards',
 				'blur-out': 'blurOut 1s ease-in-out forwards',
+				'pulse': 'pulse 1s ease-in-out infinite'
 			},
 			keyframes: {
 				pulse: {

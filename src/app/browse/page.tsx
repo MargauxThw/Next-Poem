@@ -70,6 +70,13 @@ export default function Page() {
 			return filters;
 		};
 
+		setIsLoading(true);
+		setIsNew(true);
+
+		setHasError(false);
+		setErrorMessage("");
+		setPoems([]);
+
 		const newPoemList = await fetchNewRandomFilteredPoems(
 			getLocalStorageFilters(),
 			true
@@ -91,8 +98,8 @@ export default function Page() {
 	};
 
 	useEffect(() => {
-		setIsLoading(true);
-		setIsNew(true);
+		// setIsLoading(true);
+		// setIsNew(true);
 		updatePoemList();
 	}, []);
 
@@ -123,7 +130,7 @@ export default function Page() {
 					</h2>
 					<Separator />
 					<div className="flex flex-row gap-2 w-full flex-wrap mb-0">
-						<FilterButton initiateFetch={() => {}} />
+						<FilterButton initiateFetch={() => updatePoemList()} />
 						<Select
 							value={sortMode}
 							onValueChange={(value) =>
@@ -175,7 +182,7 @@ export default function Page() {
 							})}
 					</div>
 				) : (
-					<div className={`flex flex-col gap-4 w-full -mt-2 animate-blur-in-out`}>
+					<div className={`flex flex-col gap-4 w-full -mt-2 animate-pulse`}>
 						{samplePoemList
 							.map((poem, index) => {
 								return (
