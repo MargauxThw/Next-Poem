@@ -2,15 +2,6 @@
 
 import { Separator } from "@/components/ui/separator";
 import {
-	Pagination,
-	PaginationContent,
-	PaginationEllipsis,
-	PaginationItem,
-	PaginationLink,
-	PaginationNext,
-	PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
 	Select,
 	SelectContent,
 	SelectItem,
@@ -98,8 +89,6 @@ export default function Page() {
 	};
 
 	useEffect(() => {
-		// setIsLoading(true);
-		// setIsNew(true);
 		updatePoemList();
 	}, []);
 
@@ -130,7 +119,7 @@ export default function Page() {
 					</h2>
 					<Separator />
 					<div className="flex flex-row gap-2 w-full flex-wrap mb-0">
-						<FilterButton initiateFetch={() => updatePoemList()} />
+						<FilterButton initiateFetch={updatePoemList} />
 						<Select
 							value={sortMode}
 							onValueChange={(value) =>
