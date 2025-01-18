@@ -162,6 +162,21 @@ export default function Page() {
 						<div
 							className={`flex flex-col gap-4 w-full -mt-2 animate-blur-in`}
 						>
+							<Badge
+								variant={"outline"}
+								className="border-0 text-muted-foreground justify-end px-0 py-0 -mt-1 font-light"
+							>
+								{`Poems ${
+									currentPage === 1
+										? 1
+										: currentPage * 10 - 10 + 1
+								}－${
+									currentPage * 10 >= poems.length
+										? poems.length
+										: currentPage * 10
+								} | ${sortedPoems.length} results`}
+							</Badge>
+
 							{sortedPoems
 								.slice(
 									currentPage === 1
@@ -185,6 +200,12 @@ export default function Page() {
 						<div
 							className={`flex flex-col gap-4 w-full -mt-2 animate-pulse`}
 						>
+							<Badge
+								variant={"outline"}
+								className="border-0 text-right text-muted-foreground justify-end px-0"
+							>
+								Loading
+							</Badge>
 							{samplePoemList.map((poem, index) => {
 								return (
 									<PoemCard
@@ -224,9 +245,9 @@ export default function Page() {
 							<MoveLeft />
 							Back to browse
 						</Button>
-						<Badge
-							variant={"secondary"}
-							className="px-1">{`${currentPoemIndex + 1} of ${sortedPoems.length}`}</Badge>
+						<Badge variant={"secondary"} className="px-1">{`${
+							currentPoemIndex + 1
+						} of ${sortedPoems.length}`}</Badge>
 					</div>
 					<PoemLayout child={sortedPoems[currentPoemIndex]} />
 					<Separator />
