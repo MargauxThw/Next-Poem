@@ -3,15 +3,19 @@ import { Poem, PoemFilter, ErrorMessage } from "./types";
 
 export const fetchNewRandomFilteredPoems = async (
 	poemFilter: PoemFilter,
-    forSearchDefault?: boolean
+	forSearchDefault?: boolean
 ): Promise<Array<Poem> | ErrorMessage> => {
 	const baseUrl = "https://poetrydb.org";
 
 	let inputFields = "";
 	let searchTerms = "";
-	if (poemFilter.linecount) {
+	if (
+		poemFilter.linesStart &&
+		poemFilter.linesEnd &&
+		poemFilter.linesStart == poemFilter.linesEnd
+	) {
 		inputFields += "linecount,";
-		searchTerms += `${poemFilter.linecount};`;
+		searchTerms += `${poemFilter.linesStart};`;
 	}
 
 	if (poemFilter.authorText) {
@@ -51,7 +55,26 @@ export const fetchNewRandomFilteredPoems = async (
 		const poems = await response.json();
 
 		if (poems && poems.length > 0) {
-			console.log(poems, baseUrl + responseTail)
+			// console.log(poems, baseUrl + responseTail);
+			console.log(poemFilter.linesStart, poemFilter.linesEnd, poemFilter);
+
+			if (poemFilter.linesStart || poemFilter.linesEnd) {
+				const sortedPoems = poems.filter(
+					(poem: Poem) =>
+						(!poemFilter.linesStart ||
+							poem.lines.length >= poemFilter.linesStart) &&
+						(!poemFilter.linesEnd ||
+							poem.lines.length <= poemFilter.linesEnd)
+				);
+				if (sortedPoems.length > 0) {
+					return sortedPoems;
+				} else {
+					return {
+						message:
+							"No poems could be found. Try adjusting the filters.",
+					};
+				}
+			}
 			return poems;
 		} else {
 			return {

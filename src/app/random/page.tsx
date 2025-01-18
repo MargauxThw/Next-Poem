@@ -21,14 +21,19 @@ export default function Page() {
 		const getLocalStorageFilters = () => {
 			let filters: PoemFilter = {};
 
-			const linesText = localStorage.getItem("linesText");
+			const linesStart = localStorage.getItem("linesStart");
+			const linesEnd = localStorage.getItem("linesEnd");
 			const titleText = localStorage.getItem("titleText");
 			const titleAbs = localStorage.getItem("titleAbs");
 			const authorText = localStorage.getItem("authorText");
 			const authorAbs = localStorage.getItem("authorAbs");
 
-			if (linesText && Number.parseInt(linesText)) {
-				filters.linecount = Number.parseInt(linesText);
+			if (linesStart && Number.parseInt(linesStart)) {
+				filters.linesStart = Number.parseInt(linesStart);
+			}
+
+			if (linesEnd && Number.parseInt(linesEnd)) {
+				filters.linesEnd = Number.parseInt(linesEnd);
 			}
 
 			if (titleText) {

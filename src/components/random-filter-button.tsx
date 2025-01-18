@@ -23,7 +23,8 @@ export function FilterButton({ initiateFetch }: { initiateFetch: () => void }) {
 	const [titleAbs, setTitleAbs] = useState<boolean>(false);
 	const [authorText, setAuthorText] = useState<string>("");
 	const [authorAbs, setAuthorAbs] = useState<boolean>(false);
-	const [linesText, setLinesText] = useState<string>("");
+	const [linesStart, setLinesStart] = useState<string>("");
+	const [linesEnd, setLinesEnd] = useState<string>("");
 	const [closedBySave, setClosedBySave] = useState<boolean>(false);
 
 	const initialiseFilters = () => {
@@ -33,7 +34,8 @@ export function FilterButton({ initiateFetch }: { initiateFetch: () => void }) {
 		setAuthorText(localStorage.getItem("authorText") ?? "");
 		setAuthorAbs(localStorage.getItem("authorAbs") === "true");
 
-		setLinesText(localStorage.getItem("linesText") ?? "");
+		setLinesStart(localStorage.getItem("linesStart") ?? "");
+		setLinesEnd(localStorage.getItem("linesEnd") ?? "");
 	};
 
 	useEffect(() => {
@@ -70,7 +72,8 @@ export function FilterButton({ initiateFetch }: { initiateFetch: () => void }) {
 	};
 
 	const resetLines = () => {
-		setLinesText("");
+		setLinesStart("");
+		setLinesEnd("");
 		// localStorage.setItem("linesText", "");
 	};
 
@@ -80,7 +83,8 @@ export function FilterButton({ initiateFetch }: { initiateFetch: () => void }) {
 		localStorage.setItem("titleAbs", titleAbs.toString());
 		localStorage.setItem("authorText", authorText);
 		localStorage.setItem("authorAbs", authorAbs.toString());
-		localStorage.setItem("linesText", linesText);
+		localStorage.setItem("linesStart", linesStart);
+		localStorage.setItem("linesEnd", linesEnd);
 		initiateFetch();
 	};
 
@@ -180,23 +184,42 @@ export function FilterButton({ initiateFetch }: { initiateFetch: () => void }) {
 				</div>
 				<Separator />
 				<div className="flex flex-col gap-4 items-start">
-					<div className="flex-col gap-2 w-full">
-						<Label htmlFor="lines">Lines in poem</Label>
-						<div className="flex flex-row items-center gap-2">
+					<div className="flex flex-row items-end gap-2">
+						<div className="flex-col gap-2 w-full">
+							<Label htmlFor="lines-start">
+								Minimum # of lines:
+							</Label>
 							<Input
 								type="number"
-								id="lines"
+								id="lines-start"
 								placeholder="Any"
 								onPaste={handlePaste}
-								value={linesText}
+								value={linesStart}
 								onChange={(e) => {
-									setLinesText(e.target.value);
+									setLinesStart(e.target.value);
 								}}
 							/>
-							<Button variant="secondary" onClick={resetLines}>
-								Reset
-							</Button>
 						</div>
+
+						<div className="flex-col gap-2 w-full">
+							<Label htmlFor="lines-end">
+								Maximum # of lines:
+							</Label>
+
+							<Input
+								type="number"
+								id="lines-end"
+								placeholder="Any"
+								onPaste={handlePaste}
+								value={linesEnd}
+								onChange={(e) => {
+									setLinesEnd(e.target.value);
+								}}
+							/>
+						</div>
+						<Button variant="secondary" onClick={resetLines}>
+							Reset
+						</Button>
 					</div>
 				</div>
 				<Separator />

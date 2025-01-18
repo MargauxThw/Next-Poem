@@ -9,7 +9,8 @@ export interface ErrorMessage {
 }
 
 export interface PoemFilter {
-    linecount?: number;
+    linesStart?: number;
+    linesEnd?: number;
     titleText?: string;
     authorText?: string;
     titleAbs?: boolean;
