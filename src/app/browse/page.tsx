@@ -138,14 +138,28 @@ export default function Page() {
 						<Button>Search</Button>
 
 						<FilterButton newRandomPoem={() => {}} />
-						<Select>
+						<Select
+							value={sortMode}
+							onValueChange={
+								(value) =>
+									setSortMode(
+										Object.values(sortingOption).find(
+											(v) => v === value
+										) || sortMode
+									)
+							}
+						>
 							<SelectTrigger className="w-[160px]">
-								<SelectValue defaultValue={} />
+								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								{ Object.values(sortingOption).map((option, index) => (
-									<SelectItem key={index} value={option}>{option}</SelectItem>
-								))}
+								{Object.values(sortingOption).map(
+									(option, index) => (
+										<SelectItem key={index} value={option}>
+											{option}
+										</SelectItem>
+									)
+								)}
 							</SelectContent>
 						</Select>
 					</div>
