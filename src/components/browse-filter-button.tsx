@@ -27,13 +27,13 @@ export function FilterButton({ initiateFetch }: { initiateFetch: () => void }) {
 	const [closedBySave, setClosedBySave] = useState<boolean>(false);
 
 	const initialiseFilters = () => {
-		setTitleText(localStorage.getItem("titleText") ?? "");
-		setTitleAbs(localStorage.getItem("titleAbs") === "true");
+		setTitleText(localStorage.getItem("titleText_browse") ?? "");
+		setTitleAbs(localStorage.getItem("titleAbs_browse") === "true");
 
-		setAuthorText(localStorage.getItem("authorText") ?? "");
-		setAuthorAbs(localStorage.getItem("authorAbs") === "true");
+		setAuthorText(localStorage.getItem("authorText_browse") ?? "");
+		setAuthorAbs(localStorage.getItem("authorAbs_browse") === "true");
 
-		setLinesText(localStorage.getItem("linesText") ?? "");
+		setLinesText(localStorage.getItem("linesText_browse") ?? "");
 	};
 
 	useEffect(() => {
@@ -76,11 +76,11 @@ export function FilterButton({ initiateFetch }: { initiateFetch: () => void }) {
 
 	const saveFilters = () => {
 		setClosedBySave(true);
-		localStorage.setItem("titleText", titleText);
-		localStorage.setItem("titleAbs", titleAbs.toString());
-		localStorage.setItem("authorText", authorText);
-		localStorage.setItem("authorAbs", authorAbs.toString());
-		localStorage.setItem("linesText", linesText);
+		localStorage.setItem("titleText_browse", titleText);
+		localStorage.setItem("titleAbs_browse", titleAbs.toString());
+		localStorage.setItem("authorText_browse", authorText);
+		localStorage.setItem("authorAbs_browse", authorAbs.toString());
+		localStorage.setItem("linesText_browse", linesText);
 		initiateFetch();
 	};
 
@@ -95,7 +95,7 @@ export function FilterButton({ initiateFetch }: { initiateFetch: () => void }) {
 	return (
 		<Dialog onOpenChange={(open) => handleOpenChange(open)}>
 			<DialogTrigger asChild>
-				<Button variant="default" className="sm:hidden">
+				<Button variant="default">
 					Edit filters
 					<SlidersHorizontal className="ml-auto" />
 				</Button>
