@@ -18,8 +18,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { FilterButton } from "@/components/browse-filter-button";
 import { useEffect, useMemo, useState } from "react";
 import { Poem, PoemFilter, sortingOption } from "@/lib/types";
@@ -118,7 +116,7 @@ export default function Page() {
 
 			return toDisplay;
 		}
-	}, [totalPages]);
+	}, [totalPages, currentPage]);
 
 	return (
 		<div className="grid grid-rows-[20px_1fr_20px] items-start justify-items-center min-h-full p-4 pb-8 gap-4 sm:p-20 animate-blur-in">
@@ -131,11 +129,6 @@ export default function Page() {
 					</h2>
 					<Separator />
 					<div className="flex flex-row gap-2 w-full flex-wrap mb-0">
-						{/* <div className="flex-grow">
-							<Input />
-						</div>
-						<Button>Search</Button> */}
-
 						<FilterButton initiateFetch={() => {}} />
 						<Select
 							value={sortMode}
@@ -149,7 +142,7 @@ export default function Page() {
 						>
 							<SelectTrigger className="w-min justify-start gap-2">
 								<span className="text-muted-foreground">
-									Sort:{" "}
+									Sort:
 								</span>
 								<SelectValue />
 							</SelectTrigger>
