@@ -24,7 +24,7 @@ export default function Page() {
 		sortingOption.titleAZ
 	);
 	const [isNew, setIsNew] = useState<boolean>(true);
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	// const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [hasError, setHasError] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState<any>("");
 
@@ -61,7 +61,7 @@ export default function Page() {
 			return filters;
 		};
 
-		setIsLoading(true);
+		// setIsLoading(true);
 		setIsNew(true);
 
 		setHasError(false);
@@ -76,12 +76,12 @@ export default function Page() {
 		if ("message" in newPoemList) {
 			setHasError(true);
 			setErrorMessage(newPoemList.message);
-			setIsLoading(false);
+			// setIsLoading(false);
 			setIsNew(false);
 		} else {
 			setPoems(newPoemList);
 			setCurrentPage(1);
-			setIsLoading(false);
+			// setIsLoading(false);
 			setIsNew(false);
 			setHasError(false);
 			setErrorMessage("");
@@ -95,6 +95,31 @@ export default function Page() {
 	const totalPages = useMemo(() => {
 		return Math.ceil(poems.length / 10);
 	}, [poems]);
+
+	const sortedPoems = useMemo(() => {
+		switch (sortMode) {
+			case sortingOption.authorAZ:
+				return poems.sort((a, b) => a.author.localeCompare(b.author));
+
+			case sortingOption.authorZA:
+				return poems.sort((a, b) => b.author.localeCompare(a.author));
+
+			case sortingOption.titleAZ:
+				return poems.sort((a, b) => a.title.localeCompare(b.title));
+
+			case sortingOption.titleZA:
+				return poems.sort((a, b) => b.title.localeCompare(a.title));
+
+			case sortingOption.linesAsc:
+				return poems.sort((a, b) => a.lines.length - b.lines.length);
+
+			case sortingOption.linesDesc:
+				return poems.sort((a, b) => b.lines.length - a.lines.length);
+			
+			default:
+				return poems;
+		}
+	}, [poems, sortMode]);
 
 	const changePage = (newPageNumber: number) => {
 		setCurrentPage(newPageNumber);
@@ -152,8 +177,10 @@ export default function Page() {
 				{hasError ? (
 					<p>{errorMessage}</p>
 				) : poems && poems.length > 0 ? (
-					<div className={`flex flex-col gap-4 w-full -mt-2 animate-blur-in`}>
-						{poems
+					<div
+						className={`flex flex-col gap-4 w-full -mt-2 animate-blur-in`}
+					>
+						{sortedPoems
 							.slice(
 								currentPage === 1 ? 0 : currentPage * 10 - 10,
 								currentPage * 10 >= poems.length
@@ -171,17 +198,18 @@ export default function Page() {
 							})}
 					</div>
 				) : (
-					<div className={`flex flex-col gap-4 w-full -mt-2 animate-pulse`}>
-						{samplePoemList
-							.map((poem, index) => {
-								return (
-									<PoemCard
-										key={index}
-										poem={poem}
-										openPoem={() => {}}
-									/>
-								);
-							})}
+					<div
+						className={`flex flex-col gap-4 w-full -mt-2 animate-pulse`}
+					>
+						{samplePoemList.map((poem, index) => {
+							return (
+								<PoemCard
+									key={index}
+									poem={poem}
+									openPoem={() => {}}
+								/>
+							);
+						})}
 					</div>
 				)}
 				{totalPages !== 1 && !isNew && !hasError ? (
