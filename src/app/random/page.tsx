@@ -7,6 +7,7 @@ import { Poem, PoemFilter } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { samplePoem } from "@/lib/dummy-data";
+import { getLocalStorageFilters } from "@/lib/utils";
 
 export default function Page() {
 	const [poem, setPoem] = useState<Poem | null>(null);
@@ -17,43 +18,6 @@ export default function Page() {
 
 	const updatePoem = async () => {
 		setIsLoading(true);
-
-		const getLocalStorageFilters = () => {
-			let filters: PoemFilter = {};
-
-			const linesStart = localStorage.getItem("linesStart");
-			const linesEnd = localStorage.getItem("linesEnd");
-			const titleText = localStorage.getItem("titleText");
-			const titleAbs = localStorage.getItem("titleAbs");
-			const authorText = localStorage.getItem("authorText");
-			const authorAbs = localStorage.getItem("authorAbs");
-
-			if (linesStart && Number.parseInt(linesStart)) {
-				filters.linesStart = Number.parseInt(linesStart);
-			}
-
-			if (linesEnd && Number.parseInt(linesEnd)) {
-				filters.linesEnd = Number.parseInt(linesEnd);
-			}
-
-			if (titleText) {
-				filters.titleText = titleText;
-			}
-
-			if (authorText) {
-				filters.authorText = authorText;
-			}
-
-			if (titleAbs === "true") {
-				filters.titleAbs = true;
-			}
-
-			if (authorAbs === "true") {
-				filters.authorAbs = true;
-			}
-
-			return filters;
-		};
 
 		const getRandomPoem = (poems: Array<Poem>) => {
 			// Select a random poem from the results (excluding the current poem)

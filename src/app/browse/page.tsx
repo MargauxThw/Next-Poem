@@ -16,6 +16,7 @@ import { fetchNewRandomFilteredPoems } from "@/lib/actions";
 import PoemCard from "@/components/poem-card";
 import { BrowsePagination } from "@/components/browse-pagination";
 import { samplePoemList } from "@/lib/dummy-data";
+import { getLocalStorageFilters } from "@/lib/utils";
 
 export default function Page() {
 	const [currentPage, setCurrentPage] = useState<number>(1);
@@ -29,43 +30,6 @@ export default function Page() {
 	const [errorMessage, setErrorMessage] = useState<any>("");
 
 	const updatePoemList = async () => {
-		const getLocalStorageFilters = () => {
-			let filters: PoemFilter = {};
-
-			const linesStart = localStorage.getItem("linesStart_browse");
-			const linesEnd = localStorage.getItem("linesEnd_browse");
-			const titleText = localStorage.getItem("titleText_browse");
-			const titleAbs = localStorage.getItem("titleAbs_browse");
-			const authorText = localStorage.getItem("authorText_browse");
-			const authorAbs = localStorage.getItem("authorAbs_browse");
-
-			if (linesStart && Number.parseInt(linesStart)) {
-				filters.linesStart = Number.parseInt(linesStart);
-			}
-
-			if (linesEnd && Number.parseInt(linesEnd)) {
-				filters.linesEnd = Number.parseInt(linesEnd);
-			}
-
-			if (titleText) {
-				filters.titleText = titleText;
-			}
-
-			if (authorText) {
-				filters.authorText = authorText;
-			}
-
-			if (titleAbs === "true") {
-				filters.titleAbs = true;
-			}
-
-			if (authorAbs === "true") {
-				filters.authorAbs = true;
-			}
-
-			return filters;
-		};
-
 		// setIsLoading(true);
 		setIsNew(true);
 
@@ -74,7 +38,7 @@ export default function Page() {
 		setPoems([]);
 
 		const newPoemList = await fetchNewRandomFilteredPoems(
-			getLocalStorageFilters(),
+			getLocalStorageFilters("_browse"),
 			true
 		);
 
