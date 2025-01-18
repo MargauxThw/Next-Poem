@@ -17,6 +17,11 @@ import PoemCard from "@/components/poem-card";
 import { BrowsePagination } from "@/components/browse-pagination";
 import { samplePoemList } from "@/lib/dummy-data";
 import { getLocalStorageFilters } from "@/lib/utils";
+import PoemLayout from "@/components/poem-layout";
+import { Button } from "@/components/ui/button";
+import { MoveLeft } from "lucide-react";
+import BrowseActionBar from "@/components/browse-action-bar";
+import { Badge } from "@/components/ui/badge";
 
 export default function Page() {
 	const [currentPage, setCurrentPage] = useState<number>(1);
@@ -28,6 +33,8 @@ export default function Page() {
 	// const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [hasError, setHasError] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState<any>("");
+	const [browseMode, setBrowseMode] = useState<boolean>(true);
+	const [currentPoemIndex, setCurrentPoemIndex] = useState<number>(0);
 
 	const updatePoemList = async () => {
 		// setIsLoading(true);
@@ -84,7 +91,7 @@ export default function Page() {
 
 			case sortingOption.linesDesc:
 				return poems.sort((a, b) => b.lines.length - a.lines.length);
-			
+
 			default:
 				return poems;
 		}
@@ -100,100 +107,152 @@ export default function Page() {
 
 	const openPoem = (poem: Poem) => {
 		console.log("Opening", poem.title);
+		setBrowseMode(false);
+		setCurrentPoemIndex(sortedPoems.indexOf(poem));
 	};
 
 	return (
 		<div className="grid grid-rows-[20px_1fr_20px] items-start justify-items-center min-h-full p-4 pb-8 gap-4 sm:p-20 animate-blur-in">
-			<main
-				className={`flex flex-col gap-8 row-start-2 items-start sm:items-start w-full max-w-lg h-fit`}
-			>
-				<div className="flex flex-col items-start sm:items-start gap-4 w-full">
-					<h2 className="decoration-black font-bold text-xl">
-						Browse poems
-					</h2>
-					<Separator />
-					<div className="flex flex-row gap-2 w-full flex-wrap mb-0">
-						<FilterButton initiateFetch={updatePoemList} />
-						<Select
-							value={sortMode}
-							onValueChange={(value) =>
-								setSortMode(
-									Object.values(sortingOption).find(
-										(v) => v === value
-									) || sortMode
-								)
-							}
-						>
-							<SelectTrigger className="w-min justify-start gap-2">
-								<span className="text-muted-foreground">
-									Sort:
-								</span>
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								{Object.values(sortingOption).map(
-									(option, index) => (
-										<SelectItem key={index} value={option}>
-											{option}
-										</SelectItem>
+			{browseMode ? (
+				<main
+					className={`flex flex-col gap-8 row-start-2 items-start sm:items-start w-full max-w-lg h-fit`}
+				>
+					<div className="flex flex-col items-start sm:items-start gap-4 w-full">
+						<h2 className="decoration-black font-bold text-xl">
+							Browse poems
+						</h2>
+						<Separator />
+						<div className="flex flex-row gap-2 w-full flex-wrap mb-0">
+							<FilterButton initiateFetch={updatePoemList} />
+							<Select
+								value={sortMode}
+								onValueChange={(value) =>
+									setSortMode(
+										Object.values(sortingOption).find(
+											(v) => v === value
+										) || sortMode
 									)
-								)}
-							</SelectContent>
-						</Select>
+								}
+							>
+								<SelectTrigger className="w-min justify-start gap-2">
+									<span className="text-muted-foreground">
+										Sort:
+									</span>
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									{Object.values(sortingOption).map(
+										(option, index) => (
+											<SelectItem
+												key={index}
+												value={option}
+											>
+												{option}
+											</SelectItem>
+										)
+									)}
+								</SelectContent>
+							</Select>
+						</div>
+						<Separator />
 					</div>
-					<Separator />
-				</div>
-				{hasError ? (
-					<p>{errorMessage}</p>
-				) : poems && poems.length > 0 ? (
-					<div
-						className={`flex flex-col gap-4 w-full -mt-2 animate-blur-in`}
-					>
-						{sortedPoems
-							.slice(
-								currentPage === 1 ? 0 : currentPage * 10 - 10,
-								currentPage * 10 >= poems.length
-									? poems.length
-									: currentPage * 10
-							)
-							.map((poem, index) => {
+					{hasError ? (
+						<p>{errorMessage}</p>
+					) : poems && poems.length > 0 ? (
+						<div
+							className={`flex flex-col gap-4 w-full -mt-2 animate-blur-in`}
+						>
+							{sortedPoems
+								.slice(
+									currentPage === 1
+										? 0
+										: currentPage * 10 - 10,
+									currentPage * 10 >= poems.length
+										? poems.length
+										: currentPage * 10
+								)
+								.map((poem, index) => {
+									return (
+										<PoemCard
+											key={index}
+											poem={poem}
+											openPoem={openPoem}
+										/>
+									);
+								})}
+						</div>
+					) : (
+						<div
+							className={`flex flex-col gap-4 w-full -mt-2 animate-pulse`}
+						>
+							{samplePoemList.map((poem, index) => {
 								return (
 									<PoemCard
 										key={index}
 										poem={poem}
-										openPoem={openPoem}
+										openPoem={() => {}}
 									/>
 								);
 							})}
+						</div>
+					)}
+					{totalPages !== 1 && !isNew && !hasError ? (
+						<>
+							<Separator className="animate-blur-in" />
+							<BrowsePagination
+								currentPage={currentPage}
+								totalPages={totalPages}
+								setCurrentPage={changePage}
+							/>
+						</>
+					) : (
+						<></>
+					)}
+				</main>
+			) : (
+				<main
+					className={`flex flex-col gap-8 row-start-0 items-start sm:items-start w-full max-w-lg h-fit ${
+						isNew ? "animate-blur-in" : ""
+					}`}
+				>
+					<div className="flex flex-row items-center justify-between w-full">
+						<Button
+							variant={"link"}
+							className="px-0"
+							onClick={() => setBrowseMode(true)}
+						>
+							<MoveLeft />
+							Back to browse
+						</Button>
+						<Badge
+							variant={"secondary"}
+							className="px-1">{`${currentPoemIndex + 1} of ${sortedPoems.length}`}</Badge>
 					</div>
-				) : (
-					<div
-						className={`flex flex-col gap-4 w-full -mt-2 animate-pulse`}
-					>
-						{samplePoemList.map((poem, index) => {
-							return (
-								<PoemCard
-									key={index}
-									poem={poem}
-									openPoem={() => {}}
-								/>
-							);
-						})}
-					</div>
-				)}
-				{totalPages !== 1 && !isNew && !hasError ? (
-					<>
-						<Separator className="animate-blur-in" />
-						<BrowsePagination
-							currentPage={currentPage}
-							totalPages={totalPages}
-							setCurrentPage={changePage}
-						/>
-					</>
-				) : (
-					<></>
-				)}
-			</main>
+					<PoemLayout child={sortedPoems[currentPoemIndex]} />
+					<Separator />
+					<BrowseActionBar
+						next={
+							currentPoemIndex + 1 < sortedPoems.length
+								? () =>
+										setCurrentPoemIndex(
+											currentPoemIndex + 1
+										)
+								: () => setCurrentPoemIndex(0)
+						}
+						prev={
+							currentPoemIndex - 1 >= 0
+								? () =>
+										setCurrentPoemIndex(
+											currentPoemIndex - 1
+										)
+								: () =>
+										setCurrentPoemIndex(
+											sortedPoems.length - 1
+										)
+						}
+					/>
+				</main>
+			)}
 		</div>
 	);
 }
