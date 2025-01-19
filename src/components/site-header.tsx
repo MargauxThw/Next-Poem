@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { Palette } from "lucide-react";
 import { MainNav } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export function SiteHeader() {
 	return (
@@ -25,16 +26,24 @@ export function SiteHeader() {
 									<span className="sr-only">Edit theme</span>
 								</Link>
 							</Button>
-							<Button variant="outline">
-								<Link
-									href={"/login"}
-									target="_blank"
-									rel="noreferrer"
-								>
+							<SignedIn>
+								<UserButton />
+							</SignedIn>
+							<SignedOut>
+								<SignInButton>
+								<Button variant="outline">
 									Log in
-									<span className="sr-only">Log in</span>
-								</Link>
-							</Button>
+									{/* <Link
+										href={"/login"}
+										target="_blank"
+										rel="noreferrer"
+									>
+										Log in
+										<span className="sr-only">Log in</span>
+									</Link> */}
+								</Button>
+								</SignInButton>
+							</SignedOut>
 						</nav>
 					</div>
 				</div>
