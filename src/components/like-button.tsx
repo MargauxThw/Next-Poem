@@ -21,7 +21,7 @@ export default function LikeButton({ isAnimating }: { isAnimating: boolean }) {
       <span className="sr-only">{`${heart ? "Unlike poem" : "Like poem"}`}</span>
 			<Heart
 				fill={heart ? "red" : "white"}
-				stroke={heart ? "red" : "black"}
+				stroke={heart ? "bg-inherit" : "black"}
 			/>
 		</Button>
 	);

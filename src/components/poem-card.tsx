@@ -12,9 +12,17 @@ import {
 	CardTitle,
 } from "./ui/card";
 import { Badge } from "./ui/badge";
+import { Heart } from "lucide-react";
 
-export default function PoemCard({ poem, openPoem }: { poem: Poem, openPoem: (poem: Poem) => void }) {
-
+export default function PoemCard({
+	poem,
+	openPoem,
+	heart,
+}: {
+	poem: Poem;
+	openPoem: (poem: Poem) => void;
+	heart?: boolean;
+}) {
 	return (
 		<Card
 			className="w-full hover:shadow-lg cursor-pointer"
@@ -30,6 +38,7 @@ export default function PoemCard({ poem, openPoem }: { poem: Poem, openPoem: (po
 							variant={"outline"}
 							className="text-muted-foreground px-1"
 						>{`${poem.lines.length} lines`}</Badge>
+						{heart ? <Heart fill="red" stroke="bg-inherit" className="h-4 -ml-1" /> : <></>}
 					</div>
 				</CardDescription>
 				<Separator />

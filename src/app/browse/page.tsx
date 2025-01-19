@@ -203,6 +203,7 @@ export default function Page() {
 												key={index}
 												poem={poem}
 												openPoem={openPoem}
+												// heart={Math.random() > 0.5 ? true : false}
 											/>
 										);
 									})}
