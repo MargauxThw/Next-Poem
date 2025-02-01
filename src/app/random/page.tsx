@@ -8,11 +8,6 @@ import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { samplePoem } from "@/lib/dummy-data";
 import { getLocalStorageFilters } from "@/lib/utils";
-// import { createClient } from '@/utils/supabase/server'
-// import { cookies } from 'next/headers'
-
-import { useSession, useUser } from "@clerk/nextjs";
-import { createClient } from "@supabase/supabase-js";
 
 export default function Page() {
 

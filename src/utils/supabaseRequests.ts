@@ -1,7 +1,7 @@
 import { Poem } from "@/lib/types";
-import { supabaseClient } from "./supabaseClient";
+import supabaseClient from "./supabaseClient";
 
-export const getLikes = async ({
+export const getMyPoems = async ({
 	userId,
 	token,
 }: {
@@ -10,12 +10,12 @@ export const getLikes = async ({
 }) => {
 	const supabase = await supabaseClient(token);
 
-	const { data: likes } = await supabase
+	const { data: myPoems } = await supabase
 		.from("likes")
 		.select("*")
 		.eq("user_id", userId);
 
-	return likes;
+	return myPoems;
 };
 
 export const getIsLiked = async ({
@@ -38,20 +38,24 @@ export const getIsLiked = async ({
 			.eq("poem_author", poem.author)
 			.eq("poem_lines", poem.lines.length);
 
-		console.log("DATA", data);
-        if (data && data.length === 0) {
-            return false;
-        }
+		if (data && data.length === 0) {
+			return false;
+		}
 
 		if (error) {
-			console.log("ERROR 1");
+			console.error(
+				"There was an error checking if the poem has been liked.",
+				error
+			);
 			return false;
 		}
 
 		return true;
 	} catch (error) {
-		console.error("ERROR 2");
-
+		console.error(
+			"There was an error checking if the poem has been liked.",
+			error
+		);
 		return false;
 	}
 };

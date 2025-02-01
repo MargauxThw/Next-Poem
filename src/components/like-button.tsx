@@ -8,7 +8,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Poem } from "@/lib/types";
 import { useEffect } from "react";
 import { getIsLiked, likePoem, unlikePoem } from "@/utils/supabaseRequests";
-// import { useOptimistic } from "react";
+import { useOptimistic } from "react";
+import { startTransition } from "react";
+import { toast } from "sonner";
 
 export default function LikeButton({
 	isAnimating,
@@ -19,7 +21,7 @@ export default function LikeButton({
 }) {
 	const { userId, getToken } = useAuth();
 	const [isLiked, setIsLiked] = useState<boolean>(false);
-	// const [optimisticLiked, setOptimisticLiked] = useOptimistic(isLiked);
+	const [optimisticLiked, setOptimisticLiked] = useState<boolean>(false);
 
 	const getIsLikedDB = async () => {
 		const token = await getToken({ template: "supabase-next-poems" });
@@ -31,6 +33,7 @@ export default function LikeButton({
 	};
 
 	const likeDB = async () => {
+		setOptimisticLiked(true);
 		const token = await getToken({ template: "supabase-next-poems" });
 		if (userId && token) {
 			await likePoem({ userId, token, poem });
@@ -38,6 +41,7 @@ export default function LikeButton({
 	};
 
 	const unlikeDB = async () => {
+		setOptimisticLiked(false);
 		const token = await getToken({ template: "supabase-next-poems" });
 		if (userId && token) {
 			await unlikePoem({ userId, token, poem });
@@ -46,9 +50,11 @@ export default function LikeButton({
 
 	useEffect(() => {
 		setIsLiked(false);
-		getIsLikedDB().then((likedInDB) => setIsLiked(likedInDB));
+		getIsLikedDB().then((likedInDB) => {
+			setIsLiked(likedInDB);
+			setOptimisticLiked(likedInDB);
+		});
 	}, [poem]);
-
 
 	const handleHeartClick = async () => {
 		if (isLiked) {
@@ -57,7 +63,13 @@ export default function LikeButton({
 			await likeDB();
 		}
 
-		getIsLikedDB().then((likedInDB) => setIsLiked(likedInDB));
+		getIsLikedDB().then((likedInDB) => {
+			setIsLiked(likedInDB);
+			if (isLiked !== optimisticLiked) {
+				toast("An error occurred trying to like this poem.");
+				setOptimisticLiked(likedInDB);
+			}
+		});
 	};
 
 	return (
@@ -67,14 +79,14 @@ export default function LikeButton({
 					variant="outline"
 					onClick={handleHeartClick}
 					size="icon"
-					disabled={isAnimating}
+					disabled={isLiked !== optimisticLiked || isAnimating}
 				>
 					<span className="sr-only">{`${
-						isLiked ? "Unlike poem" : "Like poem"
+						optimisticLiked ? "Unlike poem" : "Like poem"
 					}`}</span>
 					<Heart
-						fill={isLiked ? "red" : "white"}
-						stroke={isLiked ? "bg-inherit" : "black"}
+						fill={optimisticLiked ? "red" : "white"}
+						stroke={optimisticLiked ? "bg-inherit" : "black"}
 					/>
 				</Button>
 			</SignedIn>
@@ -91,7 +103,9 @@ export default function LikeButton({
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent>
-						<p><a href="/login">Log in or sign up</a> to save poems</p>
+						<p>
+							<a href="/login">Log in or sign up</a> to save poems
+						</p>
 					</PopoverContent>
 				</Popover>
 			</SignedOut>

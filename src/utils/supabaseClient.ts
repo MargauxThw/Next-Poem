@@ -1,13 +1,29 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-export const supabaseClient = async (supabaseToken: string) => {
+let cachedSupabaseClient: SupabaseClient | null = null;
+
+const supabaseClient = async (supabaseToken: string) => {
+	if (cachedSupabaseClient) {
+		return cachedSupabaseClient;
+	}
+
 	const supabase = createClient(
 		process.env.NEXT_PUBLIC_SUPABASE_URL!,
 		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 		{
-			global: { headers: { Authorization: `Bearer ${supabaseToken}` } },
+			global: {
+				headers: {
+					...(supabaseToken && {
+						Authorization: `Bearer ${supabaseToken}`,
+					}),
+				},
+			},
 		}
 	);
 
+	cachedSupabaseClient = supabase;
+
 	return supabase;
 };
+
+export default supabaseClient;
