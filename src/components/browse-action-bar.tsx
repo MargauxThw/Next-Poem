@@ -3,21 +3,24 @@
 import { ChevronLeft, ChevronRight, Shuffle } from "lucide-react";
 import LikeButton from "./like-button";
 import { Button } from "./ui/button";
+import { Poem } from "@/lib/types";
 
 export default function BrowseActionBar({
 	next,
 	prev,
 	random,
 	numPoems,
+	poem
 }: {
 	next: () => void;
 	prev: () => void;
 	random: () => void;
 	numPoems: number;
+	poem: Poem;
 }) {
 	return (
 		<div className="flex gap-2">
-			<LikeButton isAnimating={false} />
+			<LikeButton isAnimating={false} poem={poem} />
 			{numPoems > 1 ? (
 				<>
 					<Button variant="outline" onClick={random} size={"icon"}>

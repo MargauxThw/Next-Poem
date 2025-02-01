@@ -285,6 +285,7 @@ export default function Page() {
 							}
 							random={() => setCurrentPoemIndex(getRandomPoemIndex())}
 							numPoems={sortedPoems.length}
+							poem={sortedPoems[currentPoemIndex]}
 						/>
 					</main>
 				)}

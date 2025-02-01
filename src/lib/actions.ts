@@ -43,16 +43,27 @@ export const fetchNewRandomFilteredPoems = async (
 	}
 
 	let responseTail = "";
-	if (inputFields.length > 0) {
+	if (
+		inputFields.length > 0 ||
+		poemFilter.linesStart ||
+		poemFilter.linesEnd
+	) {
 		inputFields = inputFields.slice(0, -1);
-		responseTail = `/${inputFields}/${searchTerms}`;
+		if (inputFields.length > 0) {
+			responseTail = `/${inputFields}/${searchTerms}`;
+		} else {
+			responseTail = "/random";
+		}
 	} else {
 		responseTail = forSearchDefault ? "/random/10" : "/random";
 	}
 
 	try {
+		console.log(baseUrl + responseTail);
 		const response = await fetch(baseUrl + responseTail);
 		const poems = await response.json();
+
+		// console.log(poems, poems.length);
 
 		if (poems && poems.length > 0) {
 			// console.log(poems, baseUrl + responseTail);

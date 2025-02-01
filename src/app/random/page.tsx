@@ -8,67 +8,8 @@ import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { samplePoem } from "@/lib/dummy-data";
 import { getLocalStorageFilters } from "@/lib/utils";
-// import { createClient } from '@/utils/supabase/server'
-// import { cookies } from 'next/headers'
-
-import { useSession, useUser } from "@clerk/nextjs";
-import { createClient } from "@supabase/supabase-js";
 
 export default function Page() {
-	// const cookieStore = await cookies();
-	// const supabase = createClient(cookieStore);
-	// const { data: todos } = await supabase.from('todos').select()
-
-	const [tasks, setTasks] = useState<any[]>([])
-	// The `useUser()` hook will be used to ensure that Clerk has loaded data about the logged in user
-	const { user } = useUser();
-	// The `useSession()` hook will be used to get the Clerk `session` object
-	const { session } = useSession();
-
-	// Create a custom supabase client that injects the Clerk Supabase token into the request headers
-	function createClerkSupabaseClient() {
-		return createClient(
-			process.env.NEXT_PUBLIC_SUPABASE_URL!,
-			process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-			{
-				global: {
-					// Get the custom Supabase token from Clerk
-					fetch: async (url, options = {}) => {
-						const clerkToken = await session?.getToken({
-							template: "supabase-next-poems",
-						});
-
-						// Insert the Clerk Supabase token into the headers
-						const headers = new Headers(options?.headers);
-						headers.set("Authorization", `Bearer ${clerkToken}`);
-
-						// Call the default fetch
-						return fetch(url, {
-							...options,
-							headers,
-						});
-					},
-				},
-			}
-		);
-	}
-
-	// Create a `client` object for accessing Supabase data using the Clerk token
-	const client = createClerkSupabaseClient();
-
-	// This `useEffect` will wait for the `user` object to be loaded before requesting
-	// the tasks for the logged in user
-	useEffect(() => {
-		if (!user) return;
-
-		async function loadLikes() {
-			const { data, error } = await client.from("Likes").select();
-			if (!error) setTasks(data);
-		}
-
-		loadLikes();
-		console.log("TASKS", tasks)
-	}, [user]);
 
 	const [poem, setPoem] = useState<Poem | null>(null);
 	const [isNew, setIsNew] = useState<boolean>(false);
@@ -157,6 +98,7 @@ export default function Page() {
 						initiateFetch={updatePoem}
 						isValidPoem={!hasError}
 						isAnimating={isLoading}
+						poem={poem}
 					/>
 				</main>
 			) : (
