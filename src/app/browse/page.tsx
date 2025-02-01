@@ -71,10 +71,13 @@ export default function Page() {
 		return Math.ceil(poems.length / 10);
 	}, [poems]);
 
-	const hasFilters = useMemo(() => {
-		if (!window) return false;
-		return Object.keys(getLocalStorageFilters("_browse")).length !== 0;
-	}, [poems]);
+	const hasFilters = () => {
+		if (localStorage) {
+			return Object.keys(getLocalStorageFilters("_browse")).length !== 0;
+		} else {
+			return false;
+		}
+	};
 
 	const sortedPoems = useMemo(() => {
 		switch (sortMode) {
