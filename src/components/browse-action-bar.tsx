@@ -19,7 +19,7 @@ export default function BrowseActionBar({
 	poem: Poem;
 }) {
 	return (
-		<div className="flex gap-2">
+		<div className="flex gap-2 mb-16">
 			<LikeButton isAnimating={false} poem={poem} />
 			{numPoems > 1 ? (
 				<>
