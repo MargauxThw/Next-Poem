@@ -31,9 +31,9 @@ export function SiteHeader() {
 							</SignedIn>
 							<SignedOut>
 								<SignInButton>
-								<Button variant="outline">
-									Log in
-									{/* <Link
+									<Button variant="outline">
+										Log in
+										{/* <Link
 										href={"/login"}
 										target="_blank"
 										rel="noreferrer"
@@ -41,7 +41,7 @@ export function SiteHeader() {
 										Log in
 										<span className="sr-only">Log in</span>
 									</Link> */}
-								</Button>
+									</Button>
 								</SignInButton>
 							</SignedOut>
 						</nav>

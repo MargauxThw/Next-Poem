@@ -10,7 +10,7 @@ export default function RandomActionBar({
 	initiateFetch,
 	isValidPoem,
 	isAnimating,
-	poem
+	poem,
 }: {
 	initiateFetch: () => void;
 	isValidPoem: boolean;
@@ -19,8 +19,10 @@ export default function RandomActionBar({
 }) {
 	return (
 		<div className="flex gap-2">
-      <FilterButton initiateFetch={initiateFetch} />
-			{isValidPoem && <LikeButton isAnimating={isAnimating} poem={poem} />}
+			<FilterButton initiateFetch={initiateFetch} />
+			{isValidPoem && (
+				<LikeButton isAnimating={isAnimating} poem={poem} />
+			)}
 			<Button
 				variant="outline"
 				onClick={initiateFetch}
