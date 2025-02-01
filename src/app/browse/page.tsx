@@ -72,7 +72,7 @@ export default function Page() {
 	}, [poems]);
 
 	const hasFilters = useMemo(() => {
-		if (!localStorage) return false;
+		if (!window) return false;
 		return Object.keys(getLocalStorageFilters("_browse")).length !== 0;
 	}, [poems]);
 
