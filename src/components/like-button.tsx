@@ -8,8 +8,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Poem } from "@/lib/types";
 import { useEffect } from "react";
 import { getIsLiked, likePoem, unlikePoem } from "@/utils/supabaseRequests";
-import { useOptimistic } from "react";
-import { startTransition } from "react";
 import { toast } from "sonner";
 
 export default function LikeButton({
