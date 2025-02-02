@@ -9,10 +9,6 @@ export function cn(...inputs: ClassValue[]) {
 export function getLocalStorageFilters(urlSuffix?: string): PoemFilter {
       let filters: PoemFilter = {};
 
-      if (!localStorage) {
-        return filters;
-      }
-
       const linesStart = localStorage.getItem("linesStart" + (urlSuffix ?? ""));
       const linesEnd = localStorage.getItem("linesEnd" + (urlSuffix ?? ""));
       const titleText = localStorage.getItem("titleText" + (urlSuffix ?? ""));
