@@ -184,7 +184,7 @@ export default function Page() {
 								variant={"outline"}
 								className="border-0 text-muted-foreground justify-end px-0 py-0 -mt-1 font-light"
 							>
-								{hasFilters
+								{hasFilters()
 									? `Poems ${
 											currentPage === 1
 												? 1
