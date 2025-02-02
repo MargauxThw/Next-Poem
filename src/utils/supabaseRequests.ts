@@ -1,4 +1,4 @@
-import { Poem } from "@/lib/types";
+import { ErrorMessage, Poem } from "@/lib/types";
 import supabaseClient from "./supabaseClient";
 
 export const getMyPoems = async ({
@@ -7,15 +7,28 @@ export const getMyPoems = async ({
 }: {
 	userId: string;
 	token: string;
-}) => {
-	const supabase = await supabaseClient(token);
+}): Promise<Poem[] | ErrorMessage> => {
+	let supabase;
 
-	const { data: myPoems } = await supabase
-		.from("likes")
-		.select("*")
-		.eq("user_id", userId);
+	try {
+		supabase = await supabaseClient(token);
+	} catch (error) {
+		console.error("There was an error connecting to the database.", error);
+		return { message: "There was an error fetching your poems." };
+	}
 
-	return myPoems;
+	try {
+		const { data: myPoems } = await supabase
+			.from("likes")
+			.select("*")
+			.eq("user_id", userId);
+
+		return myPoems as Poem[];
+		
+	} catch (error) {
+		console.error("There was an error fetching your poems.", error);
+		return { message: "There was an error fetching your poems." };
+	}
 };
 
 export const getIsLiked = async ({
