@@ -19,7 +19,7 @@ import { samplePoemList } from "@/lib/dummy-data";
 import { getLocalStorageFilters } from "@/lib/utils";
 import PoemLayout from "@/components/poem-layout";
 import { Button } from "@/components/ui/button";
-import { Link, MoveLeft, Shuffle } from "lucide-react";
+import { MoveLeft } from "lucide-react";
 import BrowseActionBar from "@/components/browse-action-bar";
 import { Badge } from "@/components/ui/badge";
 
