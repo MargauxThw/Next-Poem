@@ -102,7 +102,7 @@ export default function LikeButton({
 					</PopoverTrigger>
 					<PopoverContent>
 						<p>
-							<a href="/login">Log in or sign up</a> to save poems
+							<a href="/my-poems" className="underline">Log in or sign up</a> to save poems
 						</p>
 					</PopoverContent>
 				</Popover>
